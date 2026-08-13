@@ -1,4 +1,19 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
  * AI Grader Dashboard Block - Main block class
  *
@@ -15,7 +30,6 @@ defined('MOODLE_INTERNAL') || die();
 require_once(__DIR__ . '/locallib.php');
 
 class block_aigrader_dashboard extends block_base {
-
     /**
      * Initialize the block
      */
@@ -201,7 +215,7 @@ class block_aigrader_dashboard extends block_base {
         }
 
         // Sort courses by ungraded count (highest first)
-        usort($courses, function($a, $b) {
+        usort($courses, function ($a, $b) {
             return $b['total_ungraded'] - $a['total_ungraded'];
         });
 

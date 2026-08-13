@@ -51,8 +51,8 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'block_aigrader_dashboard';
-$plugin->version   = 2026060400208;
+$plugin->version   = 2026060400;
 $plugin->requires  = 2022041900;
 $plugin->supported  = [400, 500];  // Moodle 4.0 to 5.x
 $plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = '2.0.8'; // SAVEPOINT-BUMP v2.0.7: no-op savepoint marker for clean upgrade path. No DB schema changes.; // PROCTOR-QUICKLINK: Added Proctoring Reports quicklink for site admins. Shows flagged/pending count badge (red for flagged, amber for pending) when attempts need review. Gracefully hidden if quizaccess_webcamproctor is not installed. No DB schema changes.
+$plugin->release   = '2.0.9'; // SAVEPOINT-BUMP v2.0.7: no-op savepoint marker for clean upgrade path. No DB schema changes.; // PROCTOR-QUICKLINK: Added Proctoring Reports quicklink for site admins. Shows flagged/pending count badge (red for flagged, amber for pending) when attempts need review. Gracefully hidden if quizaccess_webcamproctor is not installed. No DB schema changes.
