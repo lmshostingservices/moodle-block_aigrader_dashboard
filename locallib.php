@@ -61,12 +61,133 @@ function aigrader_dashboard_get_gradable_course_ids(): array {
 }
 
 /**
- * Get ungraded essay data for the supplied list of course IDs.
+ * Whether submissions from inactive students should be excluded (v2.1.0).
  *
- * @param int[] $gradable_course_ids
+ * The switch lives in quiz_aigrader so a single setting governs both the grading
+ * queue and this dashboard — the two must never disagree about what is countable.
+ * get_config() returns false for a setting that has never been written (the case on
+ * upgrade until an admin visits the settings page), so the default is applied here.
+ * A local override is honoured first for sites running the block without the report
+ * plugin installed.
+ *
+ * @return bool
+ */
+function aigrader_dashboard_hide_inactive_enabled(): bool {
+    $local = get_config('block_aigrader_dashboard', 'hide_inactive_students');
+
+    // 'inherit' (the default) defers to quiz_aigrader so one switch governs the whole
+    // suite; the explicit values exist for sites running the block on its own.
+    if ($local === '1' || $local === 1) {
+        return true;
+    }
+    if ($local === '0' || $local === 0) {
+        return false;
+    }
+
+    $shared = get_config('quiz_aigrader', 'hide_inactive_students');
+    if ($shared === false || $shared === null || $shared === '') {
+        return true; // Default on — historical data hidden out of the box.
+    }
+    return (bool) (int) $shared;
+}
+
+/**
+ * SQL fragment excluding attempts by students with no active enrolment (v2.1.0).
+ *
+ * quiz_aigrader uses get_enrolled_sql($coursecontext, '', 0, true) for this, but that
+ * helper resolves a single course context and these queries aggregate across every
+ * gradable course in one statement. The EXISTS below applies the same four conditions
+ * correlated on c.id:
+ *   - ue.status = ENROL_USER_ACTIVE (0)          — not a suspended enrolment
+ *   - e.status  = ENROL_INSTANCE_ENABLED (0)     — enrolment method not disabled
+ *   - timestart / timeend inside the current window, 0 meaning unbounded
+ *   - the EXISTS itself                          — excludes fully unenrolled users
+ * u.deleted = 0 is included because none of these queries joins {user}, so deleted
+ * accounts were padding the totals regardless of enrolment state.
+ *
+ * @param array $params Query parameters, appended to by reference.
+ * @return string SQL to append to the WHERE clause (empty when the filter is off).
+ */
+function aigrader_dashboard_active_enrolment_sql(array &$params): string {
+    if (!aigrader_dashboard_hide_inactive_enabled()) {
+        return '';
+    }
+
+    $now = time();
+    $params['agd_now_start'] = $now;
+    $params['agd_now_end'] = $now;
+
+    return "
+              AND EXISTS (
+                  SELECT 1
+                    FROM {user_enrolments} ue
+                    JOIN {enrol} e ON e.id = ue.enrolid AND e.status = 0
+                    JOIN {user} u ON u.id = ue.userid AND u.deleted = 0
+                   WHERE ue.userid = qza.userid
+                     AND e.courseid = c.id
+                     AND ue.status = 0
+                     AND (ue.timestart = 0 OR ue.timestart <= :agd_now_start)
+                     AND (ue.timeend = 0 OR ue.timeend >= :agd_now_end)
+              )";
+}
+
+/**
+ * SQL fragment excluding essays with no gradable content (v2.1.0).
+ *
+ * quiz_aigrader skips these in PHP via answer_is_blank(): it takes the most recent step
+ * carrying answer data and treats editor scaffolding as empty. That is why the dashboard
+ * total used to exceed the number of cards actually rendered on the report page.
+ *
+ * strip_tags() has no SQL equivalent, so the empty-editor forms Moodle's editors emit are
+ * matched literally. The inner MAX() mirrors the report's "latest answer step" semantics,
+ * so an answer typed and then deleted before submission is excluded by both plugins.
+ *
+ * @param moodle_database $db
+ * @return string SQL to append to the WHERE clause.
+ */
+function aigrader_dashboard_nonblank_answer_sql($db): string {
+    $valuecmp = $db->sql_compare_text('qasd.value', 255);
+
+    // Empty output produced by Atto / TinyMCE / plain text areas.
+    $blank = [
+        "''", "'<p></p>'", "'<p><br></p>'", "'<p><br /></p>'", "'<p><br/></p>'",
+        "'<br>'", "'<br/>'", "'<br />'", "'&nbsp;'", "'<p>&nbsp;</p>'",
+        "'<div></div>'", "'<div><br></div>'",
+    ];
+    $blanklist = implode(', ', $blank);
+
+    return "
+              AND EXISTS (
+                  SELECT 1
+                    FROM {question_attempt_steps} qas_a
+                    JOIN {question_attempt_step_data} qasd
+                      ON qasd.attemptstepid = qas_a.id AND qasd.name = 'answer'
+                   WHERE qas_a.questionattemptid = qa.id
+                     AND qasd.value IS NOT NULL
+                     AND {$valuecmp} NOT IN ({$blanklist})
+                     AND qas_a.sequencenumber = (
+                         SELECT MAX(qas_b.sequencenumber)
+                           FROM {question_attempt_steps} qas_b
+                           JOIN {question_attempt_step_data} qasd_b
+                             ON qasd_b.attemptstepid = qas_b.id AND qasd_b.name = 'answer'
+                          WHERE qas_b.questionattemptid = qa.id
+                     )
+              )";
+}
+
+/**
+ * Get ungraded essay data.
+ *
+ * v2.1.0: this is now the ONLY copy of this query. The block class and the notification
+ * task previously carried their own near-identical versions, which had already drifted
+ * apart (the task never received the RC3 rewrite and silently dropped rows through a
+ * non-unique first column). Both now delegate here.
+ *
+ * @param int[]|null $gradable_course_ids Course IDs to report on, or null for every course
+ *                                        (used by the scheduled notification task).
  * @return array{courses: array, total: int, overdue: int}
  */
-function aigrader_dashboard_get_ungraded_data(array $gradable_course_ids): array {
+function aigrader_dashboard_get_ungraded_data(?array $gradable_course_ids = null): array {
     global $DB;
 
     $courses = [];
@@ -74,7 +195,25 @@ function aigrader_dashboard_get_ungraded_data(array $gradable_course_ids): array
     $overdue_threshold = get_config('block_aigrader_dashboard', 'overdue_threshold') ?: 24;
     $overdue_time = time() - ($overdue_threshold * 3600);
 
-    list($in_sql, $params) = $DB->get_in_or_equal($gradable_course_ids, SQL_PARAMS_NAMED);
+    $params = [];
+    $coursewhere = '';
+    if ($gradable_course_ids !== null) {
+        if (empty($gradable_course_ids)) {
+            return ['courses' => [], 'total' => 0, 'overdue' => 0];
+        }
+        list($in_sql, $params) = $DB->get_in_or_equal($gradable_course_ids, SQL_PARAMS_NAMED);
+        $coursewhere = "AND c.id {$in_sql}";
+    }
+
+    // Inactive students excluded, and blank essays excluded to match the grading
+    // queue (v2.1.0). Both fragments append their own named parameters.
+    $enrolwhere = aigrader_dashboard_active_enrolment_sql($params);
+    $answerwhere = aigrader_dashboard_nonblank_answer_sql($DB);
+
+    // Attempt states aligned with quiz_aigrader's render_essay_table() (v2.1.0), which
+    // accepts the wider list. Restricting to 'finished' here was a second source of
+    // disagreement between the dashboard total and the report page.
+    $attemptstates = "'finished','complete','gradedright','gradedwrong','gradedpartial'";
 
     // RC3: LEFT JOIN anti-pattern replaces the correlated subquery that ran
     // SELECT MAX(sequencenumber) once per question_attempt row.
@@ -90,7 +229,7 @@ function aigrader_dashboard_get_ungraded_data(array $gradable_course_ids): array
             JOIN {quiz} q ON q.course = c.id
             JOIN {course_modules} cm ON cm.instance = q.id
                 AND cm.module = (SELECT id FROM {modules} WHERE name = 'quiz')
-            JOIN {quiz_attempts} qza ON qza.quiz = q.id AND qza.state = 'finished'
+            JOIN {quiz_attempts} qza ON qza.quiz = q.id AND qza.state IN ({$attemptstates})
             JOIN {question_usages} qu ON qu.id = qza.uniqueid
             JOIN {question_attempts} qa ON qa.questionusageid = qu.id
             JOIN {question} qn ON qn.id = qa.questionid
@@ -101,7 +240,9 @@ function aigrader_dashboard_get_ungraded_data(array $gradable_course_ids): array
             WHERE qn.qtype = 'essay'
               AND qas.state = 'needsgrading'
               AND qas_later.id IS NULL
-              AND c.id {$in_sql}
+              {$coursewhere}
+              {$enrolwhere}
+              {$answerwhere}
             GROUP BY c.id, c.fullname, c.shortname, q.id, q.name, cm.id
             ORDER BY c.fullname, q.name";
 

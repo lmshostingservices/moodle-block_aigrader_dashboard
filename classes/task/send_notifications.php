@@ -177,71 +177,24 @@ class send_notifications extends \core\task\scheduled_task {
     }
 
     /**
-     * Get ungraded essay data across all courses
-     * Only includes courses where there are users with mod/quiz:grade capability
+     * Get ungraded essay data across all courses.
+     *
+     * v2.1.0: replaced with a delegation to locallib.php. The copy that lived here had
+     * drifted from the block's version — it never received the RC3 rewrite (still running
+     * a correlated MAX(sequencenumber) subquery per attempt row) and selected courseid as
+     * its first column, which is not unique across quizzes, so get_records_sql() silently
+     * discarded every quiz after the first in any course with more than one. Both faults
+     * disappear with the shared implementation, which also applies the inactive-student
+     * and blank-answer filters.
+     *
+     * Passing null reports on every course, preserving this task's site-wide scope.
+     *
+     * @return array{courses: array, total: int, overdue: int}
      */
     private function get_ungraded_essays() {
-        global $DB;
+        global $CFG;
+        require_once($CFG->dirroot . '/blocks/aigrader_dashboard/locallib.php');
 
-        $courses = [];
-        $total = 0;
-
-        // SQL to find essay questions with ungraded attempts
-        // Uses subquery to get only the LATEST step per question attempt
-        $sql = "SELECT 
-                    c.id as courseid, c.fullname as coursename,
-                    q.id as quizid, q.name as quizname,
-                    cm.id as cmid,
-                    COUNT(DISTINCT qa.id) as ungraded_count,
-                    MIN(qa.timemodified) as oldest_ungraded
-                FROM {course} c
-                JOIN {quiz} q ON q.course = c.id
-                JOIN {course_modules} cm ON cm.instance = q.id 
-                    AND cm.module = (SELECT id FROM {modules} WHERE name = 'quiz')
-                JOIN {quiz_attempts} qza ON qza.quiz = q.id AND qza.state = 'finished'
-                JOIN {question_usages} qu ON qu.id = qza.uniqueid
-                JOIN {question_attempts} qa ON qa.questionusageid = qu.id
-                JOIN {question} qn ON qn.id = qa.questionid
-                JOIN {question_attempt_steps} qas ON qas.questionattemptid = qa.id
-                    AND qas.sequencenumber = (
-                        SELECT MAX(qas2.sequencenumber)
-                        FROM {question_attempt_steps} qas2
-                        WHERE qas2.questionattemptid = qa.id
-                    )
-                WHERE qn.qtype = 'essay'
-                AND qas.state = 'needsgrading'
-                GROUP BY c.id, c.fullname, q.id, q.name, cm.id
-                ORDER BY c.fullname, q.name";
-
-        $records = $DB->get_records_sql($sql);
-
-        foreach ($records as $rec) {
-            if (!isset($courses[$rec->courseid])) {
-                $courses[$rec->courseid] = [
-                    'id' => $rec->courseid,
-                    'name' => $rec->coursename,
-                    'quizzes' => [],
-                ];
-            }
-
-            $courses[$rec->courseid]['quizzes'][] = [
-                'id' => $rec->quizid,
-                'name' => $rec->quizname,
-                'cmid' => $rec->cmid,
-                'ungraded' => (int) $rec->ungraded_count,
-                'oldest_ungraded' => $rec->oldest_ungraded,
-                'link' => new \moodle_url('/mod/quiz/report.php', [
-                    'id' => $rec->cmid,
-                    'mode' => 'aigrader'
-                ]),
-            ];
-
-            $total += (int) $rec->ungraded_count;
-        }
-
-        return [
-            'courses' => array_values($courses),
-            'total' => $total,
-        ];
+        return aigrader_dashboard_get_ungraded_data(null);
     }
 }

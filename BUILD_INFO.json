@@ -1,9 +1,9 @@
 {
   "component": "block_aigrader_dashboard",
-  "version": "2.0.9",
-  "numeric_version": "2026060400",
-  "build_id": "69e62d24f87b0e41",
-  "build_timestamp": "2026-08-11T00:00:00.000Z",
+  "version": "2.0.5",
+  "numeric_version": "2026041700205",
+  "build_id": "e1d5bd5e48089e90",
+  "build_timestamp": "2026-04-17T00:20:04.757Z",
   "folder": "block_aigrader_dashboard",
-  "verification": "10digit-migration-2.0.9"
+  "verification": "e87a47171b05d5e4"
 }

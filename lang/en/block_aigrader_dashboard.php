@@ -96,3 +96,10 @@ $string['view_all_course_count'] = '{$a} course(s) with ungraded essays';
 $string['reports'] = 'Reports';
 $string['essay_grader_report'] = 'Essay Grader Report';
 $string['webcam_proctoring_report'] = 'Webcam Proctoring Report';
+
+// Inactive student filter (v2.1.0).
+$string['hide_inactive_students'] = 'Hide submissions from inactive students';
+$string['hide_inactive_students_desc'] = 'Controls whether essays awaiting grading are counted for students who no longer have an active enrolment — suspended, expired, unenrolled, or on a disabled enrolment method. Leave on "Use the AI Essay Grader setting" so the dashboard totals always match the grading queue. The explicit Yes/No options are for sites running this block without the AI Essay Grader report plugin installed.';
+$string['hide_inactive_inherit'] = 'Use the AI Essay Grader setting (recommended)';
+$string['hide_inactive_yes'] = 'Yes — hide inactive students';
+$string['hide_inactive_no'] = 'No — count everyone who ever attempted';

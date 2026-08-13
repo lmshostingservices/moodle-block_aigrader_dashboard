@@ -66,6 +66,20 @@ if ($hassiteconfig) {
         1
     ));
 
+    // Inactive student filter (v2.1.0). Defaults to inheriting the AI Essay Grader
+    // setting so the dashboard total and the grading queue never disagree.
+    $settings->add(new admin_setting_configselect(
+        'block_aigrader_dashboard/hide_inactive_students',
+        get_string('hide_inactive_students', 'block_aigrader_dashboard'),
+        get_string('hide_inactive_students_desc', 'block_aigrader_dashboard'),
+        'inherit',
+        [
+            'inherit' => get_string('hide_inactive_inherit', 'block_aigrader_dashboard'),
+            '1'       => get_string('hide_inactive_yes', 'block_aigrader_dashboard'),
+            '0'       => get_string('hide_inactive_no', 'block_aigrader_dashboard'),
+        ]
+    ));
+
     // Overdue threshold (hours)
     $settings->add(new admin_setting_configtext(
         'block_aigrader_dashboard/overdue_threshold',

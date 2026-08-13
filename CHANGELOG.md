@@ -2,6 +2,47 @@
 
 All notable changes to this plugin will be documented in this file.
 
+## [2.1.0] - 2026-08-03
+
+### Added
+- **Inactive student filter**: ungraded counts now only include students with an active
+  enrolment in the course. Attempt rows survive suspension and unenrolment, so historical
+  students previously inflated every figure the block reported. Implemented as an `EXISTS`
+  against `{user_enrolments}` / `{enrol}` correlated on `c.id`, applying the same four
+  conditions `get_enrolled_sql(..., $onlyactive = true)` uses in quiz_aigrader: active
+  enrolment status, enabled enrolment method, current `timestart`/`timeend` window, and
+  the existence of an enrolment row at all. `u.deleted = 0` is now also enforced — these
+  queries never joined `{user}`, so deleted accounts were being counted regardless.
+- **New setting** `block_aigrader_dashboard/hide_inactive_students`, defaulting to
+  `inherit`, which defers to `quiz_aigrader/hide_inactive_students`. Explicit Yes/No values
+  exist for sites running the block without the report plugin.
+
+### Fixed
+- **Dashboard total no longer disagrees with the grading queue.** Two causes, both resolved:
+  the block counted essays with no content while the report page skipped them, and the block
+  accepted only `quiz_attempts.state = 'finished'` while the report accepted a wider list.
+  Blank answers are now excluded in SQL using the same "latest answer step" semantics as
+  `quiz_aigrader::answer_is_blank()`, and the state list matches.
+- **Notification email was silently under-reporting.** The task's query selected `courseid`
+  as its first column and passed it to `get_records_sql()`, which keys results by that
+  column — so in any course with more than one quiz, every quiz after the first was
+  discarded before the email was built. Fixed by the consolidation below.
+
+### Changed
+- **Query consolidated to one copy.** The ungraded-essay query existed three times: in
+  `block_aigrader_dashboard.php`, in `locallib.php`, and in `classes/task/send_notifications.php`.
+  The copies had already drifted — the task never received the 1.9.8 RC3 rewrite and was
+  still running a correlated `MAX(sequencenumber)` subquery per attempt row. `locallib.php`
+  is now the single implementation; the block class and the task delegate to it.
+  `aigrader_dashboard_get_ungraded_data()` accepts `null` to mean "every course", preserving
+  the task's site-wide scope.
+- `get_gradable_course_ids()` in the block class likewise delegates to the locallib function
+  rather than duplicating it.
+
+### Notes
+- No database schema changes.
+- Requires quiz_aigrader 3.9.7 for the shared setting; works standalone otherwise, filter on.
+
 ## [1.9.8] - 2026-03-11
 
 ### Performance
