@@ -85,13 +85,13 @@ function xmldb_block_aigrader_dashboard_upgrade($oldversion) {
 
     // v2.0.1: FIX — viewall.php now requires blocklib.php before including the block class
     //         so block_base is defined. PHP-only fix; no DB schema changes.
-    if ($oldversion < 202603240201) {
-        upgrade_block_savepoint(true, 202603240201, 'aigrader_dashboard');
+    if ($oldversion < 2026032401) {
+        upgrade_block_savepoint(true, 2026032401, 'aigrader_dashboard');
     }
 
     // v2.0.2: VERSION BUMP — Clean release. No DB schema changes.
-    if ($oldversion < 202603240202) {
-        upgrade_block_savepoint(true, 202603240202, 'aigrader_dashboard');
+    if ($oldversion < 2026032402) {
+        upgrade_block_savepoint(true, 2026032402, 'aigrader_dashboard');
     }
 
     // v2.0.3: "View All" button is now always visible at the bottom of the block
@@ -101,8 +101,8 @@ function xmldb_block_aigrader_dashboard_upgrade($oldversion) {
     //   visible in the block and they must click "View All" to see them. Button text
     //   now shows the total course count. No DB schema changes.
     //   Files changed: block_aigrader_dashboard.php, styles.css, lang/en/...php.
-    if ($oldversion < 202604170203) {
-        upgrade_block_savepoint(true, 202604170203, 'aigrader_dashboard');
+    if ($oldversion < 2026041703) {
+        upgrade_block_savepoint(true, 2026041703, 'aigrader_dashboard');
     }
 
     // v2.0.4: BUG-AGD-BLOCKBASE — viewall.php still threw "Class 'block_base' not found"
@@ -111,9 +111,9 @@ function xmldb_block_aigrader_dashboard_upgrade($oldversion) {
     //   functions with zero dependency on block_base or blocklib.php. viewall.php now
     //   requires locallib.php directly and calls aigrader_dashboard_fetch_all_data().
     //   block_aigrader_dashboard::fetch_all_data() proxies to locallib. PHP-only fix.
-    //   No DB schema changes. version.php → 202604170204.
-    if ($oldversion < 202604170204) {
-        upgrade_block_savepoint(true, 202604170204, 'aigrader_dashboard');
+    //   No DB schema changes. version.php → 2026041704.
+    if ($oldversion < 2026041704) {
+        upgrade_block_savepoint(true, 2026041704, 'aigrader_dashboard');
     }
 
     // v2.0.5 - BUG FIX: viewall.php had two display issues.
@@ -127,18 +127,18 @@ function xmldb_block_aigrader_dashboard_upgrade($oldversion) {
     //      widths across courses. Fix: table-layout:fixed + explicit column width
     //      percentages (50/15/15/20%) via CSS so all tables have identical column
     //      proportions regardless of content. PHP-only + lang + CSS fix. No DB changes.
-    //      version.php → 2026041700205. Also corrects previous 12-digit numeric
-    //      (202604170204 → 2026041700205, now properly 13 digits).
-    if ($oldversion < 2026041700205) {
-        upgrade_block_savepoint(true, 2026041700205, 'aigrader_dashboard');
+    //      version.php → 2026041705. Also corrects previous 12-digit numeric
+    //      (2026041704 → 2026041705, now 10-digit Marketplace format).
+    if ($oldversion < 2026041705) {
+        upgrade_block_savepoint(true, 2026041705, 'aigrader_dashboard');
     }
 
     // v2.0.7: SAVEPOINT-BUMP — no-op marker for clean upgrade path. No DB schema changes.
-    if ($oldversion < 2026060400207) {
-        upgrade_block_savepoint(true, 2026060400207, 'aigrader_dashboard');
+    if ($oldversion < 2026060407) {
+        upgrade_block_savepoint(true, 2026060407, 'aigrader_dashboard');
     }
 
-    if ($oldversion < 2026060400208) {
+    if ($oldversion < 2026060408) {
         // Domain update: lms-labs.com → lms-labs.com
         if (function_exists('opcache_invalidate')) {
             $_pluginDir = realpath(__DIR__ . '/..');
@@ -147,7 +147,7 @@ function xmldb_block_aigrader_dashboard_upgrade($oldversion) {
                 if (file_exists($_full)) { opcache_invalidate($_full, true); }
             }
         } elseif (function_exists('opcache_reset')) { opcache_reset(); }
-        upgrade_block_savepoint(true, 2026060400208, 'aigrader_dashboard');
+        upgrade_block_savepoint(true, 2026060408, 'aigrader_dashboard');
     }
 
     return true;
