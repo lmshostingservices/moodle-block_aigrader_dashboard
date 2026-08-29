@@ -51,8 +51,8 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'block_aigrader_dashboard';
-$plugin->version   = 2026080300;
+$plugin->version   = 2026082901;
 $plugin->requires  = 2022041900;
 $plugin->supported  = [400, 500];  // Moodle 4.0 to 5.x
 $plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = '2.1.0'; // INACTIVE STUDENT FILTER + QUERY CONSOLIDATION: the ungraded-essay query existed in three drifted copies (block class, locallib, notification task) and now exists only in locallib.php; the other two delegate. Ungraded counts now exclude students without an active enrolment (suspended, expired, disabled enrol method, unenrolled) and deleted user accounts, via an EXISTS on {user_enrolments}/{enrol} correlated on c.id. Counts also now exclude blank essays and accept the same wider quiz_attempts.state list as quiz_aigrader 3.9.7, so the dashboard total matches the grading queue. Fixes the notification task silently dropping all but the first quiz per course (non-unique first column in get_records_sql). New setting block_aigrader_dashboard/hide_inactive_students (default 'inherit' -> quiz_aigrader). No DB schema changes. version.php -> 2026080300.
+$plugin->release   = '2.1.1'; // RELEASE RECOVERY: Republished the reviewed authoritative source under a new immutable tag because the historical tag contained a different source tree. No functional changes.

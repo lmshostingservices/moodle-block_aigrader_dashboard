@@ -1,3 +1,8 @@
+## [v2.1.1] - 2026-08-29
+
+### Changed
+- RELEASE RECOVERY: Republished the reviewed authoritative source under a new immutable tag because the historical tag contained a different source tree. No functional changes.
+
 # Changelog - AI Grader Dashboard Block
 
 All notable changes to this plugin will be documented in this file.
