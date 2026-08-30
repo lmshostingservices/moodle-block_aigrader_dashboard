@@ -10,7 +10,7 @@ Centralized monitoring of ungraded essays with email notifications. Add to Dashb
 
 ## Current Release
 
-Version 2.1.1 republishes the reviewed authoritative source under a new immutable tag because the historical tag contained a different source tree. There are no functional changes in this release.
+Version 2.1.2 republishes the reviewed authoritative source under a new immutable tag with mandatory CI evidence. The v2.1.1 tag remains unchanged. There are no functional changes in this release.
 
 ## Licence
 

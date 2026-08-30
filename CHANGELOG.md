@@ -1,3 +1,8 @@
+## [v2.1.2] - 2026-08-30
+
+### Changed
+- RELEASE RECOVERY: Republished the reviewed authoritative source under a new immutable tag with mandatory CI evidence. The v2.1.1 tag remains immutable but could not satisfy the release gate because it was created without the managed CI workflow. No functional changes.
+
 ## [v2.1.1] - 2026-08-29
 
 ### Changed

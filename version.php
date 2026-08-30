@@ -51,8 +51,8 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'block_aigrader_dashboard';
-$plugin->version   = 2026082901;
+$plugin->version   = 2026083000;
 $plugin->requires  = 2022041900;
 $plugin->supported  = [400, 500];  // Moodle 4.0 to 5.x
 $plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = '2.1.1'; // RELEASE RECOVERY: Republished the reviewed authoritative source under a new immutable tag because the historical tag contained a different source tree. No functional changes.
+$plugin->release   = '2.1.2'; // RELEASE RECOVERY: Republished the reviewed authoritative source under a new immutable tag with mandatory CI evidence. No functional changes.
