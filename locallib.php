@@ -33,8 +33,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Return every course-id where the current user can grade essays.
  * Site admins get all visible courses (capped at 500 most-recently-modified).
@@ -49,9 +47,9 @@ function aigrader_dashboard_get_gradable_course_ids(): array {
         return array_keys($records);
     }
 
-    $user_courses = enrol_get_users_courses($USER->id, true);
+    $usercourses = enrol_get_users_courses($USER->id, true);
     $gradable = [];
-    foreach ($user_courses as $course) {
+    foreach ($usercourses as $course) {
         $context = context_course::instance($course->id);
         if (has_capability('mod/quiz:grade', $context)) {
             $gradable[] = $course->id;
@@ -75,7 +73,7 @@ function aigrader_dashboard_get_gradable_course_ids(): array {
 function aigrader_dashboard_hide_inactive_enabled(): bool {
     $local = get_config('block_aigrader_dashboard', 'hide_inactive_students');
 
-    // 'inherit' (the default) defers to quiz_aigrader so one switch governs the whole
+    // The 'inherit' default defers to quiz_aigrader so one switch governs the whole.
     // suite; the explicit values exist for sites running the block on its own.
     if ($local === '1' || $local === 1) {
         return true;
@@ -183,26 +181,26 @@ function aigrader_dashboard_nonblank_answer_sql($db): string {
  * apart (the task never received the RC3 rewrite and silently dropped rows through a
  * non-unique first column). Both now delegate here.
  *
- * @param int[]|null $gradable_course_ids Course IDs to report on, or null for every course
+ * @param int[]|null $gradablecourseids Course IDs to report on, or null for every course
  *                                        (used by the scheduled notification task).
  * @return array{courses: array, total: int, overdue: int}
  */
-function aigrader_dashboard_get_ungraded_data(?array $gradable_course_ids = null): array {
+function aigrader_dashboard_get_ungraded_data(?array $gradablecourseids = null): array {
     global $DB;
 
     $courses = [];
     $total = 0;
-    $overdue_threshold = get_config('block_aigrader_dashboard', 'overdue_threshold') ?: 24;
-    $overdue_time = time() - ($overdue_threshold * 3600);
+    $overduethreshold = get_config('block_aigrader_dashboard', 'overdue_threshold') ?: 24;
+    $overduetime = time() - ($overduethreshold * 3600);
 
     $params = [];
     $coursewhere = '';
-    if ($gradable_course_ids !== null) {
-        if (empty($gradable_course_ids)) {
+    if ($gradablecourseids !== null) {
+        if (empty($gradablecourseids)) {
             return ['courses' => [], 'total' => 0, 'overdue' => 0];
         }
-        list($in_sql, $params) = $DB->get_in_or_equal($gradable_course_ids, SQL_PARAMS_NAMED);
-        $coursewhere = "AND c.id {$in_sql}";
+        [$insql, $params] = $DB->get_in_or_equal($gradablecourseids, SQL_PARAMS_NAMED);
+        $coursewhere = "AND c.id {$insql}";
     }
 
     // Inactive students excluded, and blank essays excluded to match the grading
@@ -248,7 +246,7 @@ function aigrader_dashboard_get_ungraded_data(?array $gradable_course_ids = null
 
     $records = $DB->get_records_sql($sql, $params);
 
-    $total_overdue = 0;
+    $totaloverdue = 0;
 
     foreach ($records as $rec) {
         if (!isset($courses[$rec->courseid])) {
@@ -261,7 +259,7 @@ function aigrader_dashboard_get_ungraded_data(?array $gradable_course_ids = null
             ];
         }
 
-        $is_overdue = $rec->oldest_ungraded && $rec->oldest_ungraded < $overdue_time;
+        $isoverdue = $rec->oldest_ungraded && $rec->oldest_ungraded < $overduetime;
 
         $courses[$rec->courseid]['quizzes'][] = [
             'id'             => $rec->quizid,
@@ -269,7 +267,7 @@ function aigrader_dashboard_get_ungraded_data(?array $gradable_course_ids = null
             'cmid'           => $rec->cmid,
             'ungraded'       => (int) $rec->ungraded_count,
             'oldest_ungraded' => $rec->oldest_ungraded,
-            'is_overdue'     => $is_overdue,
+            'is_overdue'     => $isoverdue,
             'link'           => (new moodle_url('/mod/quiz/report.php', [
                 'id'   => $rec->cmid,
                 'mode' => 'aigrader',
@@ -279,8 +277,8 @@ function aigrader_dashboard_get_ungraded_data(?array $gradable_course_ids = null
         $courses[$rec->courseid]['total_ungraded'] += (int) $rec->ungraded_count;
         $total += (int) $rec->ungraded_count;
 
-        if ($is_overdue) {
-            $total_overdue += (int) $rec->ungraded_count;
+        if ($isoverdue) {
+            $totaloverdue += (int) $rec->ungraded_count;
         }
     }
 
@@ -292,7 +290,7 @@ function aigrader_dashboard_get_ungraded_data(?array $gradable_course_ids = null
     return [
         'courses' => array_values($courses),
         'total'   => $total,
-        'overdue' => $total_overdue,
+        'overdue' => $totaloverdue,
     ];
 }
 

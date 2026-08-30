@@ -1,7 +1,12 @@
+## [v2.1.3] - 2026-08-30
+
+### Changed
+- RELEASE RECOVERY: Resolved Moodle Plugin CI code-style, PHPDoc, and CSS lint failures found in the immutable v2.1.2 release candidate. These are standards-only changes with no intended functional effect; the historical v2.1.0, v2.1.1, and v2.1.2 tags remain unchanged.
+
 ## [v2.1.2] - 2026-08-30
 
 ### Changed
-- RELEASE RECOVERY: Republished the reviewed authoritative source under a new immutable tag with mandatory CI evidence. The v2.1.1 tag remains immutable but could not satisfy the release gate because it was created without the managed CI workflow. No functional changes.
+- RELEASE RECOVERY: Republished the reviewed authoritative source under a new immutable tag with mandatory CI evidence. The v2.1.1 tag remains immutable but could not satisfy the release gate because it was created without the managed CI workflow. The immutable v2.1.2 candidate was correctly blocked after CI identified code-style failures.
 
 ## [v2.1.1] - 2026-08-29
 

@@ -24,8 +24,9 @@
 
 namespace block_aigrader_dashboard\privacy;
 
-defined('MOODLE_INTERNAL') || die();
-
+/**
+ * Provides privacy metadata for the dashboard block.
+ */
 class provider implements \core_privacy\local\metadata\null_provider {
     /**
      * Get the language string identifier with the component's language

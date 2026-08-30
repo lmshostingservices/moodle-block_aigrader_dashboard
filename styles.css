@@ -14,48 +14,48 @@
    ============================================================ */
 .agd-container {
     /* Primary Colors */
-    --agd-primary: hsl(217, 91%, 60%);
-    --agd-primary-hover: hsl(217, 91%, 50%);
-    --agd-primary-light: hsl(217, 91%, 95%);
-    --agd-primary-foreground: hsl(0, 0%, 100%);
-    
+    --agd-primary: hsl(217deg 91% 60%);
+    --agd-primary-hover: hsl(217deg 91% 50%);
+    --agd-primary-light: hsl(217deg 91% 95%);
+    --agd-primary-foreground: hsl(0deg 0% 100%);
+
     /* Semantic Colors */
-    --agd-success: hsl(142, 76%, 36%);
-    --agd-success-light: hsl(142, 76%, 95%);
-    --agd-warning: hsl(27, 87%, 50%);
-    --agd-warning-light: hsl(27, 87%, 95%);
-    --agd-danger: hsl(0, 84%, 60%);
-    --agd-danger-light: hsl(0, 84%, 95%);
-    
+    --agd-success: hsl(142deg 76% 36%);
+    --agd-success-light: hsl(142deg 76% 95%);
+    --agd-warning: hsl(27deg 87% 50%);
+    --agd-warning-light: hsl(27deg 87% 95%);
+    --agd-danger: hsl(0deg 84% 60%);
+    --agd-danger-light: hsl(0deg 84% 95%);
+
     /* Neutral Colors */
-    --agd-text: hsl(0, 0%, 9%);
-    --agd-text-muted: hsl(217, 8%, 35%);
-    --agd-text-tertiary: hsl(217, 8%, 55%);
-    --agd-border: hsl(0, 0%, 89%);
-    --agd-bg: hsl(0, 0%, 98%);
-    --agd-card-bg: hsl(0, 0%, 100%);
-    
+    --agd-text: hsl(0deg 0% 9%);
+    --agd-text-muted: hsl(217deg 8% 35%);
+    --agd-text-tertiary: hsl(217deg 8% 55%);
+    --agd-border: hsl(0deg 0% 89%);
+    --agd-bg: hsl(0deg 0% 98%);
+    --agd-card-bg: hsl(0deg 0% 100%);
+
     /* Border Radius */
     --agd-radius-sm: 4px;
     --agd-radius: 6px;
     --agd-radius-lg: 8px;
-    
+
     /* Shadows */
-    --agd-shadow-sm: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
-    --agd-shadow: 0 4px 6px -1px rgba(0,0,0,0.08), 0 2px 4px -2px rgba(0,0,0,0.04);
-    --agd-shadow-md: 0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -4px rgba(0,0,0,0.04);
-    
+    --agd-shadow-sm: 0 1px 3px rgb(0 0 0 / 8%), 0 1px 2px rgb(0 0 0 / 4%);
+    --agd-shadow: 0 4px 6px -1px rgb(0 0 0 / 8%), 0 2px 4px -2px rgb(0 0 0 / 4%);
+    --agd-shadow-md: 0 10px 15px -3px rgb(0 0 0 / 8%), 0 4px 6px -4px rgb(0 0 0 / 4%);
+
     /* Transitions */
     --agd-transition: 150ms ease;
-    
+
     /* Typography - Matches essaygraderai.app */
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     font-size: 14px;
     line-height: 1.5;
     color: var(--agd-text);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    
+
     /* Use default Moodle block styling - no custom background/border/shadow */
 }
 
@@ -67,23 +67,24 @@
 /* =============================================================
    DARK MODE - Moodle Compatible
    ============================================================= */
+.dark .agd-container,
 body.dark .agd-container,
-body[data-bs-theme="dark"] .agd-container,
-.dark .agd-container {
-    --agd-bg: hsl(222, 47%, 7%);
-    --agd-card-bg: hsl(222, 47%, 9%);
-    --agd-text: hsl(0, 0%, 98%);
-    --agd-text-muted: hsl(217, 8%, 70%);
-    --agd-text-tertiary: hsl(217, 8%, 55%);
-    --agd-border: hsl(222, 30%, 18%);
-    --agd-primary-light: hsl(217, 91%, 15%);
-    --agd-success-light: hsl(142, 76%, 12%);
-    --agd-warning-light: hsl(27, 87%, 12%);
-    --agd-danger-light: hsl(0, 84%, 12%);
-    --agd-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
-    --agd-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
-    --agd-shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
-    background-color: hsl(222, 47%, 9%);
+body[data-bs-theme="dark"] .agd-container {
+    --agd-bg: hsl(222deg 47% 7%);
+    --agd-card-bg: hsl(222deg 47% 9%);
+    --agd-text: hsl(0deg 0% 98%);
+    --agd-text-muted: hsl(217deg 8% 70%);
+    --agd-text-tertiary: hsl(217deg 8% 55%);
+    --agd-border: hsl(222deg 30% 18%);
+    --agd-primary-light: hsl(217deg 91% 15%);
+    --agd-success-light: hsl(142deg 76% 12%);
+    --agd-warning-light: hsl(27deg 87% 12%);
+    --agd-danger-light: hsl(0deg 84% 12%);
+    --agd-shadow-sm: 0 1px 3px rgb(0 0 0 / 40%);
+    --agd-shadow: 0 4px 6px -1px rgb(0 0 0 / 40%);
+    --agd-shadow-md: 0 10px 15px -3px rgb(0 0 0 / 40%);
+
+    background-color: hsl(222deg 47% 9%);
 }
 
 /* ----- Summary Stats ----- */
@@ -179,6 +180,13 @@ body[data-bs-theme="dark"] .agd-container,
     color: var(--agd-text);
 }
 
+/* ----- Icons ----- */
+.agd-icon {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+}
+
 .agd-course-header .agd-icon {
     color: var(--agd-primary);
     flex-shrink: 0;
@@ -270,8 +278,14 @@ body[data-bs-theme="dark"] .agd-container,
 }
 
 @keyframes agd-pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.7; }
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.7;
+    }
 }
 
 /* ----- Buttons ----- */
@@ -285,6 +299,7 @@ body[data-bs-theme="dark"] .agd-container,
     border-radius: var(--agd-radius-sm);
     border: none;
     cursor: pointer;
+    /* stylelint-disable-next-line declaration-no-important -- Overrides Moodle theme link styling for button links. */
     text-decoration: none !important;
     transition: all var(--agd-transition);
     white-space: nowrap;
@@ -292,44 +307,52 @@ body[data-bs-theme="dark"] .agd-container,
 
 .agd-btn-primary {
     background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
-    color: #ffffff !important;
-    box-shadow: 0 2px 4px rgba(14, 165, 233, 0.3);
+    /* stylelint-disable-next-line declaration-no-important -- Preserves button text contrast against Moodle theme link colours. */
+    color: #fff !important;
+    box-shadow: 0 2px 4px rgb(14 165 233 / 30%);
 }
 
 .agd-btn-primary:hover {
     background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
     transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(14, 165, 233, 0.4);
-    color: #ffffff !important;
+    box-shadow: 0 4px 8px rgb(14 165 233 / 40%);
+    /* stylelint-disable-next-line declaration-no-important -- Preserves button text contrast against Moodle theme link colours. */
+    color: #fff !important;
+    /* stylelint-disable-next-line declaration-no-important -- Overrides Moodle hover link styling for button links. */
     text-decoration: none !important;
 }
 
 .agd-btn-primary:active {
     transform: translateY(0);
-    box-shadow: 0 1px 2px rgba(14, 165, 233, 0.3);
+    box-shadow: 0 1px 2px rgb(14 165 233 / 30%);
 }
 
 .agd-btn-secondary {
     background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-    color: #ffffff !important;
-    box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
+    /* stylelint-disable-next-line declaration-no-important -- Preserves button text contrast against Moodle theme link colours. */
+    color: #fff !important;
+    box-shadow: 0 2px 4px rgb(59 130 246 / 30%);
 }
 
 .agd-btn-secondary:hover {
     background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
     transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(59, 130, 246, 0.4);
-    color: #ffffff !important;
+    box-shadow: 0 4px 8px rgb(59 130 246 / 40%);
+    /* stylelint-disable-next-line declaration-no-important -- Preserves button text contrast against Moodle theme link colours. */
+    color: #fff !important;
+    /* stylelint-disable-next-line declaration-no-important -- Overrides Moodle hover link styling for button links. */
     text-decoration: none !important;
 }
 
 .agd-btn-secondary:active {
     transform: translateY(0);
-    box-shadow: 0 1px 2px rgba(59, 130, 246, 0.3);
+    box-shadow: 0 1px 2px rgb(59 130 246 / 30%);
 }
 
 /* ----- Overflow Warning Banner ----- */
+
 /* Shown when the block is displaying fewer courses than exist (limit = 10).    */
+
 /* Amber colour signals a potential risk — teacher may be missing marking tasks. */
 .agd-overflow-warning {
     display: flex;
@@ -352,22 +375,24 @@ body[data-bs-theme="dark"] .agd-container,
     color: #b45309;
 }
 
+.dark .agd-overflow-warning,
 body.dark .agd-overflow-warning,
-body[data-bs-theme="dark"] .agd-overflow-warning,
-.dark .agd-overflow-warning {
+body[data-bs-theme="dark"] .agd-overflow-warning {
     background: linear-gradient(135deg, #451a03 0%, #78350f 100%);
     border-color: #b45309;
     color: #fde68a;
 }
 
+.dark .agd-overflow-warning .agd-icon,
 body.dark .agd-overflow-warning .agd-icon,
-body[data-bs-theme="dark"] .agd-overflow-warning .agd-icon,
-.dark .agd-overflow-warning .agd-icon {
+body[data-bs-theme="dark"] .agd-overflow-warning .agd-icon {
     color: #fbbf24;
 }
 
 /* ----- View All Link ----- */
+
 /* Always shown at bottom of course list. Becomes more prominent (primary button) */
+
 /* when the block is hiding courses due to the 10-course limit.                   */
 .agd-viewall-link {
     margin-top: 12px;
@@ -403,13 +428,6 @@ body[data-bs-theme="dark"] .agd-overflow-warning .agd-icon,
     font-size: 13px;
 }
 
-/* ----- Icons ----- */
-.agd-icon {
-    width: 16px;
-    height: 16px;
-    flex-shrink: 0;
-}
-
 .agd-icon-sm {
     width: 14px;
     height: 14px;
@@ -421,26 +439,26 @@ body[data-bs-theme="dark"] .agd-overflow-warning .agd-icon,
 }
 
 /* ----- Responsive Design ----- */
-@media (max-width: 480px) {
+@media (width <= 480px) {
     .agd-summary {
         flex-direction: column;
     }
-    
+
     .agd-summary-stat {
         min-width: 100%;
     }
-    
+
     .agd-quiz {
         flex-direction: column;
         align-items: flex-start;
         gap: 8px;
     }
-    
+
     .agd-quiz-actions {
         width: 100%;
         justify-content: space-between;
     }
-    
+
     .agd-stat-number {
         font-size: 24px;
     }
@@ -454,28 +472,32 @@ body[data-bs-theme="dark"] .agd-overflow-warning .agd-icon,
         --agd-border: #334155;
         --agd-bg: #1e293b;
         --agd-card-bg: #0f172a;
+
         background-color: #1f2937;
     }
-    
+
     .agd-course-header {
         background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
     }
-    
+
     .agd-quiz:hover {
         background: #1e293b;
     }
 }
 
 /* ----- Moodle Theme Compatibility ----- */
+
 /* Use default Moodle block styling - background, border, shadow, and header */
 
 /* Bootstrap 5 Moodle overrides */
+/* stylelint-disable selector-class-pattern -- Moodle component classes use underscores. */
 .block_aigrader_dashboard .agd-btn {
     line-height: 1.4;
 }
 
 .block_aigrader_dashboard a.agd-btn:hover,
 .block_aigrader_dashboard a.agd-btn:focus {
+    /* stylelint-disable-next-line declaration-no-important -- Overrides Bootstrap/Moodle link hover decoration. */
     text-decoration: none !important;
 }
 
@@ -492,6 +514,7 @@ body[data-bs-theme="dark"] .agd-overflow-warning .agd-icon,
 .pagelayout-admin .block_aigrader_dashboard .agd-container {
     max-width: 100%;
 }
+/* stylelint-enable selector-class-pattern */
 
 /* ----- Reports Dropdown ----- */
 .agd-reports-dropdown {
@@ -505,9 +528,9 @@ body[data-bs-theme="dark"] .agd-overflow-warning .agd-icon,
     padding: 6px 12px;
     font-size: 13px;
     font-weight: 500;
-    color: #ffffff;
-    background: rgba(255, 255, 255, 0.15);
-    border: 1px solid rgba(255, 255, 255, 0.25);
+    color: #fff;
+    background: rgb(255 255 255 / 15%);
+    border: 1px solid rgb(255 255 255 / 25%);
     border-radius: var(--agd-radius-sm);
     cursor: pointer;
     transition: all var(--agd-transition);
@@ -516,14 +539,14 @@ body[data-bs-theme="dark"] .agd-overflow-warning .agd-icon,
 }
 
 .agd-reports-btn:hover {
-    background: rgba(255, 255, 255, 0.25);
-    border-color: rgba(255, 255, 255, 0.35);
+    background: rgb(255 255 255 / 25%);
+    border-color: rgb(255 255 255 / 35%);
 }
 
 .agd-reports-btn svg {
     width: 16px;
     height: 16px;
-    stroke: currentColor;
+    stroke: currentcolor;
     flex-shrink: 0;
 }
 
@@ -540,7 +563,7 @@ body[data-bs-theme="dark"] .agd-overflow-warning .agd-icon,
     top: calc(100% + 4px);
     right: 0;
     min-width: 200px;
-    background: var(--agd-card-bg, #ffffff);
+    background: var(--agd-card-bg, #fff);
     border: 1px solid var(--agd-border, #e5e7eb);
     border-radius: var(--agd-radius);
     box-shadow: var(--agd-shadow-md);
@@ -566,6 +589,7 @@ body[data-bs-theme="dark"] .agd-overflow-warning .agd-icon,
     font-size: 13px;
     font-weight: 500;
     color: var(--agd-text, #1f2937);
+    /* stylelint-disable-next-line declaration-no-important -- Overrides Moodle theme link styling for dropdown links. */
     text-decoration: none !important;
     transition: background var(--agd-transition);
     border-bottom: 1px solid var(--agd-border, #f3f4f6);
@@ -577,6 +601,7 @@ body[data-bs-theme="dark"] .agd-overflow-warning .agd-icon,
 
 .agd-dropdown-item:hover {
     background: var(--agd-bg, #f9fafb);
+    /* stylelint-disable-next-line declaration-no-important -- Overrides Moodle hover link styling for dropdown links. */
     text-decoration: none !important;
     color: var(--agd-primary, #3b82f6);
 }
@@ -584,7 +609,7 @@ body[data-bs-theme="dark"] .agd-overflow-warning .agd-icon,
 .agd-dropdown-item svg {
     width: 16px;
     height: 16px;
-    stroke: currentColor;
+    stroke: currentcolor;
     flex-shrink: 0;
     opacity: 0.7;
 }
@@ -601,22 +626,24 @@ body[data-bs-theme="dark"] .agd-overflow-warning .agd-icon,
 }
 
 /* Dark mode dropdown support */
+/* stylelint-disable no-descending-specificity -- Must follow dropdown state rules so dark theme colours take precedence. */
+.dark .agd-dropdown-menu,
 body.dark .agd-dropdown-menu,
-body[data-bs-theme="dark"] .agd-dropdown-menu,
-.dark .agd-dropdown-menu {
-    background: hsl(222, 47%, 11%);
-    border-color: hsl(222, 30%, 20%);
+body[data-bs-theme="dark"] .agd-dropdown-menu {
+    background: hsl(222deg 47% 11%);
+    border-color: hsl(222deg 30% 20%);
 }
+/* stylelint-enable no-descending-specificity */
 
+.dark .agd-dropdown-item,
 body.dark .agd-dropdown-item,
-body[data-bs-theme="dark"] .agd-dropdown-item,
-.dark .agd-dropdown-item {
+body[data-bs-theme="dark"] .agd-dropdown-item {
     color: #e2e8f0;
-    border-bottom-color: hsl(222, 30%, 18%);
+    border-bottom-color: hsl(222deg 30% 18%);
 }
 
+.dark .agd-dropdown-item:hover,
 body.dark .agd-dropdown-item:hover,
-body[data-bs-theme="dark"] .agd-dropdown-item:hover,
-.dark .agd-dropdown-item:hover {
-    background: hsl(222, 47%, 15%);
+body[data-bs-theme="dark"] .agd-dropdown-item:hover {
+    background: hsl(222deg 47% 15%);
 }

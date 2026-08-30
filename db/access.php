@@ -25,27 +25,27 @@
 defined('MOODLE_INTERNAL') || die();
 
 $capabilities = [
-    // For adding block to course pages - MUST be CONTEXT_COURSE (not CONTEXT_BLOCK!)
+    // For adding the block to course pages; must be CONTEXT_COURSE, not CONTEXT_BLOCK.
     'block/aigrader_dashboard:addinstance' => [
         'riskbitmask' => RISK_SPAM | RISK_XSS,
         'captype' => 'write',
-        'contextlevel' => CONTEXT_COURSE,  // CRITICAL: Must be CONTEXT_COURSE for blocks
+        'contextlevel' => CONTEXT_COURSE, // Must be CONTEXT_COURSE for blocks.
         'archetypes' => [
             'editingteacher' => CAP_ALLOW,
             'manager' => CAP_ALLOW,
         ],
         'clonepermissionsfrom' => 'moodle/site:manageblocks',
     ],
-    // For adding block to Dashboard/My page - CONTEXT_SYSTEM with 'user' archetype
+    // For adding the block to Dashboard/My page; CONTEXT_SYSTEM with the user archetype.
     'block/aigrader_dashboard:myaddinstance' => [
         'captype' => 'write',
         'contextlevel' => CONTEXT_SYSTEM,
         'archetypes' => [
-            'user' => CAP_ALLOW,  // All authenticated users can ADD the block
+            'user' => CAP_ALLOW, // All authenticated users can add the block.
         ],
         'clonepermissionsfrom' => 'moodle/my:manageblocks',
     ],
-    // For admin override to see all courses' ungraded essays
+    // For admin override to see all courses' ungraded essays.
     'block/aigrader_dashboard:viewall' => [
         'captype' => 'read',
         'contextlevel' => CONTEXT_SYSTEM,
