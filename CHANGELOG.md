@@ -1,3 +1,8 @@
+## [v2.1.4] - 2026-08-31
+
+### Fixed
+- Missing language string `grade_now`, which produced an "Invalid get_string() identifier" debugging notice on every page rendering the dashboard block and on the View-all page. The key was referenced in `block_aigrader_dashboard.php` and `viewall.php` but never defined in the English language pack. Language-pack-only change; no logic or schema changes.
+
 ## [v2.1.3] - 2026-08-30
 
 ### Changed

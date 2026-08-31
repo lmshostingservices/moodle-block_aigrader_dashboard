@@ -17,6 +17,12 @@
 /**
  * Version information for AI Grader Dashboard Block.
  *
+ * v2.1.4 - FIX: "Invalid get_string() identifier: 'grade_now'" debugging notice on every
+ *          page that renders the block (and on viewall.php). The 'grade_now' key was used
+ *          in block_aigrader_dashboard.php (render_dashboard) and viewall.php but was never
+ *          defined in lang/en/block_aigrader_dashboard.php. Added
+ *          $string['grade_now'] = 'Grade now';. Language-pack-only fix; no logic or DB changes.
+ *
  * v2.0.4 - FIX (BUG-AGD-BLOCKBASE): viewall.php still threw "Class 'block_base' not found"
  *          on some Moodle installations despite the v2.0.1 attempt. Root cause: loading
  *          blocklib.php via require_once is fragile — Moodle's autoloader caches this
@@ -51,9 +57,8 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'block_aigrader_dashboard';
-$plugin->version   = 2026083001;
+$plugin->version   = 2026083101;
 $plugin->requires  = 2022041900;
 $plugin->supported  = [400, 500];  // Moodle 4.0 to 5.x.
 $plugin->maturity  = MATURITY_STABLE;
-// Release recovery after v2.1.2 was correctly blocked by mandatory CI.
-$plugin->release   = '2.1.3';
+$plugin->release   = '2.1.4';

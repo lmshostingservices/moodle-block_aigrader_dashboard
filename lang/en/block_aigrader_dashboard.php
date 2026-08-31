@@ -46,6 +46,7 @@ $string['frequency_daily'] = 'Daily digest';
 $string['frequency_hourly'] = 'Hourly digest';
 $string['frequency_instant'] = 'Instant (as they occur)';
 $string['frequency_weekly'] = 'Weekly digest';
+$string['grade_now'] = 'Grade now';
 $string['hide_inactive_inherit'] = 'Use the AI Essay Grader setting (recommended)';
 $string['hide_inactive_no'] = 'No — count everyone who ever attempted';
 $string['hide_inactive_students'] = 'Hide submissions from inactive students';
