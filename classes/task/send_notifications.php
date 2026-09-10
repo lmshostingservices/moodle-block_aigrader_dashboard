@@ -190,12 +190,17 @@ class send_notifications extends \core\task\scheduled_task {
      *
      * Passing null reports on every course, preserving this task's site-wide scope.
      *
+     * v2.2.0: the cache added for the block is deliberately bypassed here. The block can
+     * afford figures that are a couple of minutes old; an email that tells someone there
+     * is nothing to mark cannot. This task runs on its own schedule, so the extra query
+     * costs nothing that matters.
+     *
      * @return array{courses: array, total: int, overdue: int}
      */
     private function get_ungraded_essays() {
         global $CFG;
         require_once($CFG->dirroot . '/blocks/aigrader_dashboard/locallib.php');
 
-        return aigrader_dashboard_get_ungraded_data(null);
+        return aigrader_dashboard_get_ungraded_data(null, false);
     }
 }

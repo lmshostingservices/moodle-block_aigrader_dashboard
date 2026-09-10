@@ -24,6 +24,10 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+// locallib.php is a plain function library rather than an autoloaded class, so it has to
+// be included before the default cache lifetime constant can be referenced below.
+require_once($CFG->dirroot . '/blocks/aigrader_dashboard/locallib.php');
+
 if ($hassiteconfig) {
     // Header.
     $settings->add(new admin_setting_heading(
@@ -86,6 +90,16 @@ if ($hassiteconfig) {
         get_string('overdue_threshold', 'block_aigrader_dashboard'),
         get_string('overdue_threshold_desc', 'block_aigrader_dashboard'),
         '24',
+        PARAM_INT
+    ));
+
+    // Result cache lifetime (v2.2.0). The block renders on every page it appears on, so
+    // repeating the aggregation for each page load is the dominant cost on large sites.
+    $settings->add(new admin_setting_configtext(
+        'block_aigrader_dashboard/cache_ttl',
+        get_string('cache_ttl', 'block_aigrader_dashboard'),
+        get_string('cache_ttl_desc', 'block_aigrader_dashboard'),
+        (string) BLOCK_AIGRADER_DASHBOARD_DEFAULT_CACHE_TTL,
         PARAM_INT
     ));
 

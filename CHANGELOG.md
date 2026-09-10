@@ -1,3 +1,34 @@
+## [v2.2.0] - 2026-09-10
+
+A performance release. The dashboard now renders from a short-lived cache and asks the
+database a much cheaper question, so large sites get their marking queue back quickly.
+
+### Performance
+
+- **The dashboard is now cached.** The block appears on every page it has been added to
+  and recalculated its figures for each of those page loads, for every user who could see
+  it. Results are now held briefly and reused, which removes almost all of that repeated
+  work on sites with long attempt histories.
+- **New "Dashboard cache lifetime" setting.** Defaults to 120 seconds, and can be set to 0
+  to recalculate on every page load. Short by design - the dashboard is a work queue, so
+  markers see their own approvals reflected quickly.
+- **The overdue calculation stays live.** Only the query result is cached; whether an essay
+  has passed the overdue threshold is worked out fresh every time, so nothing is ever
+  reported as on time when it is not.
+- **Cheaper "latest answer" lookups.** Two subqueries that aggregated across the question
+  attempt tables now stop at the first row that answers the question. Same results, less
+  work for the database.
+- **Notification emails keep reading live data.** The scheduled task deliberately bypasses
+  the cache, so an email never reports a queue that has already been cleared.
+
+### Changed
+
+- Course and quiz identifiers are now combined with Moodle's own SQL helper, so the
+  dashboard query is valid on every database Moodle supports rather than MySQL and
+  MariaDB alone.
+- Added `db/caches.php` with a described cache definition, so the new cache appears in
+  *Site administration > Plugins > Caching* and can be purged like any other.
+
 ## [v2.1.4] - 2026-08-31
 
 ### Fixed

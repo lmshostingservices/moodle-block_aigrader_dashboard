@@ -85,3 +85,8 @@ $string['view_all_course_count'] = '{$a} course(s) with ungraded essays';
 $string['view_all_courses'] = 'View all {$a->total} courses';
 $string['view_all_courses_title'] = 'All Courses with Ungraded Essays';
 $string['webcam_proctoring_report'] = 'Webcam Proctoring Report';
+
+// Result caching (v2.2.0).
+$string['cachedef_ungradeddata'] = 'Ungraded essay counts per course and quiz';
+$string['cache_ttl'] = 'Dashboard cache lifetime';
+$string['cache_ttl_desc'] = 'How long, in seconds, the dashboard reuses its ungraded-essay figures before recalculating them. The block appears on every page it is added to, so a short cache removes most of the database work on busy sites. Set to 0 to recalculate on every page load.';
