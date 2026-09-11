@@ -39,7 +39,9 @@ defined('MOODLE_INTERNAL') || die();
  * Seconds a cached ungraded-essay result is reused for when the site has not set its own
  * value. Short by design: the dashboard is a work queue, not a report.
  */
-define('BLOCK_AIGRADER_DASHBOARD_DEFAULT_CACHE_TTL', 120);
+if (!defined('BLOCK_AIGRADER_DASHBOARD_DEFAULT_CACHE_TTL')) {
+    define('BLOCK_AIGRADER_DASHBOARD_DEFAULT_CACHE_TTL', 120);
+}
 
 /**
  * Return every course-id where the current user can grade essays.
@@ -145,8 +147,9 @@ function aigrader_dashboard_active_enrolment_sql(array &$params): string {
  * total used to exceed the number of cards actually rendered on the report page.
  *
  * strip_tags() has no SQL equivalent, so the empty-editor forms Moodle's editors emit are
- * matched literally. The inner MAX() mirrors the report's "latest answer step" semantics,
- * so an answer typed and then deleted before submission is excluded by both plugins.
+ * matched literally. The inner NOT EXISTS mirrors the report's "latest answer step"
+ * semantics, so an answer typed and then deleted before submission is excluded by both
+ * plugins.
  *
  * @param moodle_database $db
  * @return string SQL to append to the WHERE clause.

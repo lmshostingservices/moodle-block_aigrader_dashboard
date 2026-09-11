@@ -57,9 +57,9 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'block_aigrader_dashboard';
-$plugin->version   = 2026091001;
+$plugin->version   = 2026091102;
 $plugin->requires  = 2022041900;
 $plugin->supported  = [400, 500];  // Moodle 4.0 to 5.x.
 $plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = '2.2.0';
-$plugin->release_prev = '2.1.4';
+$plugin->release   = '2.2.1';
+$plugin->release_prev = '2.2.0';

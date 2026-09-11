@@ -10,7 +10,7 @@ Centralized monitoring of ungraded essays with email notifications. Add to Dashb
 
 ## Current Release
 
-Version 2.2.0 is a performance release. The dashboard now renders from a short-lived
+Version 2.2.1 is a maintenance update to the 2.2.0 performance release. The dashboard now renders from a short-lived
 cache and asks the database a cheaper question, so the marking queue loads quickly on
 sites with long attempt histories. See the Performance section below and CHANGELOG.md.
 
