@@ -89,4 +89,5 @@ $string['webcam_proctoring_report'] = 'Webcam Proctoring Report';
 // Result caching (v2.2.0).
 $string['cachedef_ungradeddata'] = 'Ungraded essay counts per course and quiz';
 $string['cache_ttl'] = 'Dashboard cache lifetime';
-$string['cache_ttl_desc'] = 'How long, in seconds, the dashboard reuses its ungraded-essay figures before recalculating them. The block appears on every page it is added to, so a short cache removes most of the database work on busy sites. Set to 0 to recalculate on every page load.';
+$string['cache_ttl_desc'] = 'How long, in seconds, the dashboard figures stay usable before they are recalculated. A scheduled task refreshes them every five minutes, so in normal operation nobody ever waits for the calculation. Leave this comfortably longer than that gap. Set to 0 to recalculate on every page load, which is only sensible on small sites.';
+$string['task_warm_cache'] = 'Refresh AI Grader Dashboard figures';

@@ -1,3 +1,28 @@
+## [v2.3.0] - 2026-10-02
+
+### What's new
+
+- **The dashboard no longer slows the site down.** On sites with a large attempt history
+  the ungraded-essay calculation could take many seconds, and every page showing the block
+  waited for it. The figures are now worked out by a scheduled task every five minutes, so
+  pages simply read the finished result.
+- **Much faster calculation.** The query now starts from essay questions and the responses
+  actually awaiting marking, instead of examining every quiz attempt on the site and
+  narrowing down afterwards.
+- **No more pile-ups.** When the figures do need recalculating, one process does it while
+  everyone else carries on with the previous result. Previously every visitor arriving at
+  the same moment ran the calculation at once.
+- **Overdue status is still live.** Only the counts are reused; whether an essay has passed
+  your overdue threshold is worked out fresh every time.
+- The default cache lifetime is now 15 minutes, comfortably longer than the refresh task.
+
+### Notes for administrators
+
+- A new scheduled task appears: **Refresh AI Grader Dashboard figures**, running every five
+  minutes. Leave it enabled.
+- Counts, overdue status, blank-answer exclusion, inactive-student filtering and course
+  permissions are all unchanged.
+
 ## [v2.2.1] - 2026-09-11
 
 ### What's new

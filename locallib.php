@@ -37,10 +37,11 @@ defined('MOODLE_INTERNAL') || die();
 
 /**
  * Seconds a cached ungraded-essay result is reused for when the site has not set its own
- * value. Short by design: the dashboard is a work queue, not a report.
+ * value. Comfortably longer than the five-minute refresh task, so the figures a page sees
+ * are kept current by cron rather than by making somebody wait for the query.
  */
 if (!defined('BLOCK_AIGRADER_DASHBOARD_DEFAULT_CACHE_TTL')) {
-    define('BLOCK_AIGRADER_DASHBOARD_DEFAULT_CACHE_TTL', 120);
+    define('BLOCK_AIGRADER_DASHBOARD_DEFAULT_CACHE_TTL', 900);
 }
 
 /**
@@ -192,39 +193,72 @@ function aigrader_dashboard_nonblank_answer_sql($db): string {
 }
 
 /**
- * Run the ungraded-essay aggregation and return the raw rows.
+ * Collect the question attempts whose latest step is awaiting manual grading.
+ *
+ * v2.3.0: this is phase one of a two-phase lookup, and it exists because of how the old
+ * single statement performed. That statement joined course, quiz, quiz attempts, question
+ * usages, question attempts, questions and attempt steps, and only then narrowed to essay
+ * questions and to steps needing grading. On a site with 1.2 million question attempts the
+ * database examined over sixteen million rows to return six, because the two filters that
+ * actually matter were applied last.
+ *
+ * Both of those filters are cheap and indexed. Core indexes question.qtype, and
+ * question_attempts has a foreign key index on questionid, so essay questions and their
+ * attempts are reached directly. Starting here, rather than hoping the optimiser chooses
+ * this order on its own, keeps the plan stable as the site grows and behaves the same on
+ * every database Moodle supports.
+ *
+ * The NOT EXISTS reproduces the original "latest step" rule exactly: an attempt qualifies
+ * only when the step needing grading is the last step recorded against it.
+ *
+ * @return int[] Question attempt ids, de-duplicated.
+ */
+function aigrader_dashboard_candidate_attempt_ids(): array {
+    global $DB;
+
+    $sql = "SELECT qa.id
+              FROM {question} qn
+              JOIN {question_attempts} qa ON qa.questionid = qn.id
+              JOIN {question_attempt_steps} qas
+                ON qas.questionattemptid = qa.id
+               AND qas.state = 'needsgrading'
+             WHERE qn.qtype = 'essay'
+               AND NOT EXISTS (
+                       SELECT 1
+                         FROM {question_attempt_steps} qas_later
+                        WHERE qas_later.questionattemptid = qa.id
+                          AND qas_later.sequencenumber > qas.sequencenumber
+                   )";
+
+    $ids = $DB->get_fieldset_sql($sql);
+
+    return array_values(array_unique(array_map('intval', $ids)));
+}
+
+/**
+ * Run the ungraded-essay aggregation and return the raw rows for the whole site.
  *
  * v2.1.0: this is the ONLY copy of this query. The block class and the notification task
  * previously carried their own near-identical versions, which had already drifted apart
  * (the task never received the RC3 rewrite and silently dropped rows through a non-unique
  * first column). Both now delegate here.
  *
- * v2.2.0: split out from aigrader_dashboard_get_ungraded_data() so the result of the
- * query can be cached on its own, separately from the overdue calculation applied to it.
- * Callers should use aigrader_dashboard_get_ungraded_data() unless they specifically need
- * an uncached read.
+ * v2.3.0: phase two of the lookup. It aggregates only the attempts phase one identified,
+ * in batches, so the enrolment and blank-answer checks are applied to a small set instead
+ * of to everything on the site. The course restriction has moved out of the statement and
+ * into PHP: it only ever decided which grouped rows were returned, never what any count
+ * contained, so filtering afterwards gives the same answer and lets one cached site-wide
+ * result serve every user.
  *
- * @param int[]|null $gradablecourseids Course IDs to report on, or null for every course
- *                                        (used by the scheduled notification task).
  * @return stdClass[] One row per course/quiz pair, keyed by a course+quiz identifier.
  */
-function aigrader_dashboard_query_ungraded_rows(?array $gradablecourseids = null): array {
+function aigrader_dashboard_query_ungraded_rows(): array {
     global $DB;
 
-    $params = [];
-    $coursewhere = '';
-    if ($gradablecourseids !== null) {
-        if (empty($gradablecourseids)) {
-            return [];
-        }
-        [$insql, $params] = $DB->get_in_or_equal($gradablecourseids, SQL_PARAMS_NAMED);
-        $coursewhere = "AND c.id {$insql}";
+    $attemptids = aigrader_dashboard_candidate_attempt_ids();
+    if (empty($attemptids)) {
+        return [];
     }
-
-    // Inactive students excluded, and blank essays excluded to match the grading
-    // queue (v2.1.0). Both fragments append their own named parameters.
-    $enrolwhere = aigrader_dashboard_active_enrolment_sql($params);
-    $answerwhere = aigrader_dashboard_nonblank_answer_sql($DB);
 
     // Attempt states aligned with quiz_aigrader's render_essay_table() (v2.1.0), which
     // accepts the wider list. Restricting to 'finished' here was a second source of
@@ -236,45 +270,70 @@ function aigrader_dashboard_query_ungraded_rows(?array $gradablecourseids = null
     // every database Moodle supports, not only MySQL and MariaDB.
     $uniquekey = $DB->sql_concat('c.id', "'_'", 'q.id');
 
-    $sql = "SELECT
-                {$uniquekey} as uniquekey,
-                c.id as courseid, c.fullname as coursename, c.shortname as courseshort,
-                q.id as quizid, q.name as quizname,
-                cm.id as cmid,
-                COUNT(DISTINCT qa.id) as ungraded_count,
-                MIN(qa.timemodified) as oldest_ungraded
-            FROM {course} c
-            JOIN {quiz} q ON q.course = c.id
-            JOIN {course_modules} cm ON cm.instance = q.id
-                AND cm.module = (SELECT id FROM {modules} WHERE name = 'quiz')
-            JOIN {quiz_attempts} qza ON qza.quiz = q.id AND qza.state IN ({$attemptstates})
-            JOIN {question_usages} qu ON qu.id = qza.uniqueid
-            JOIN {question_attempts} qa ON qa.questionusageid = qu.id
-            JOIN {question} qn ON qn.id = qa.questionid
-            JOIN {question_attempt_steps} qas
-                ON qas.questionattemptid = qa.id
-               AND qas.state = 'needsgrading'
-            WHERE qn.qtype = 'essay'
-              AND NOT EXISTS (
-                      SELECT 1
-                        FROM {question_attempt_steps} qas_later
-                       WHERE qas_later.questionattemptid = qa.id
-                         AND qas_later.sequencenumber > qas.sequencenumber
-                  )
-              {$coursewhere}
-              {$enrolwhere}
-              {$answerwhere}
-            GROUP BY c.id, c.fullname, c.shortname, q.id, q.name, cm.id
-            ORDER BY c.fullname, q.name";
+    $merged = [];
 
-    return $DB->get_records_sql($sql, $params);
+    // Batched so the IN list stays within what every supported database accepts. The
+    // batches partition the attempt ids, so no attempt is counted twice and the per-batch
+    // counts can simply be added together.
+    foreach (array_chunk($attemptids, 5000) as $chunk) {
+        $params = [];
+
+        // Inactive students excluded, and blank essays excluded to match the grading
+        // queue (v2.1.0). Both fragments append their own named parameters.
+        $enrolwhere = aigrader_dashboard_active_enrolment_sql($params);
+        $answerwhere = aigrader_dashboard_nonblank_answer_sql($DB);
+
+        [$insql, $inparams] = $DB->get_in_or_equal($chunk, SQL_PARAMS_NAMED, 'agdqa');
+        $params = array_merge($params, $inparams);
+
+        $sql = "SELECT
+                    {$uniquekey} as uniquekey,
+                    c.id as courseid, c.fullname as coursename, c.shortname as courseshort,
+                    q.id as quizid, q.name as quizname,
+                    cm.id as cmid,
+                    COUNT(DISTINCT qa.id) as ungraded_count,
+                    MIN(qa.timemodified) as oldest_ungraded
+                FROM {question_attempts} qa
+                JOIN {question_usages} qu ON qu.id = qa.questionusageid
+                JOIN {quiz_attempts} qza ON qza.uniqueid = qu.id
+                    AND qza.state IN ({$attemptstates})
+                JOIN {quiz} q ON q.id = qza.quiz
+                JOIN {course} c ON c.id = q.course
+                JOIN {course_modules} cm ON cm.instance = q.id
+                    AND cm.module = (SELECT id FROM {modules} WHERE name = 'quiz')
+                WHERE qa.id {$insql}
+                  {$enrolwhere}
+                  {$answerwhere}
+                GROUP BY c.id, c.fullname, c.shortname, q.id, q.name, cm.id";
+
+        foreach ($DB->get_records_sql($sql, $params) as $key => $row) {
+            if (!isset($merged[$key])) {
+                $merged[$key] = $row;
+                continue;
+            }
+            $merged[$key]->ungraded_count += $row->ungraded_count;
+            if ($row->oldest_ungraded !== null
+                    && ($merged[$key]->oldest_ungraded === null
+                        || $row->oldest_ungraded < $merged[$key]->oldest_ungraded)) {
+                $merged[$key]->oldest_ungraded = $row->oldest_ungraded;
+            }
+        }
+    }
+
+    // The old statement ordered by course then quiz name; batching cannot preserve that,
+    // so it is restored here.
+    uasort($merged, function ($a, $b) {
+        return [$a->coursename, $a->quizname] <=> [$b->coursename, $b->quizname];
+    });
+
+    return $merged;
 }
 
 /**
  * How long a cached ungraded-essay result stays usable, in seconds.
  *
- * Zero disables caching entirely. The default is deliberately short: the dashboard is a
- * work queue, so a teacher should see their own approvals reflected quickly.
+ * Zero disables caching entirely. The scheduled task refreshes the cache well inside this
+ * window, so under normal operation a page load never finds it expired.
  *
  * @return int
  */
@@ -287,6 +346,117 @@ function aigrader_dashboard_cache_ttl(): int {
 }
 
 /**
+ * Cache key for the site-wide row set.
+ *
+ * Only the hide-inactive setting changes which rows the query produces. The course list no
+ * longer appears here: one site-wide result is cached and filtered per user afterwards, so
+ * every user shares the same entry and the scheduled task can warm it for all of them.
+ *
+ * @return string
+ */
+function aigrader_dashboard_cache_key(): string {
+    return sha1(json_encode([1, aigrader_dashboard_hide_inactive_enabled()]));
+}
+
+/**
+ * Fetch the site-wide rows, refreshing the cache when it is stale.
+ *
+ * v2.3.0: the point of this function is that a page load should never wait behind another
+ * page load. Previously every request that arrived after the cache expired ran the full
+ * query at the same time, each holding a database connection and a PHP process until it
+ * finished — which is how one slow query became a slow site rather than a slow block.
+ *
+ * Now a single request refreshes at a time. Everybody else keeps using the previous
+ * result, even once it is past its lifetime, because slightly old counts are far better
+ * than a page that will not load. Only the very first request on a cold cache has nothing
+ * to fall back on, and it is given an empty set rather than being made to wait.
+ *
+ * @param bool $blocking True to wait for and perform the refresh regardless of staleness,
+ *                       used by the scheduled task.
+ * @return stdClass[]
+ */
+function aigrader_dashboard_get_rows_cached(bool $blocking = false): array {
+    $ttl = aigrader_dashboard_cache_ttl();
+    if ($ttl <= 0 && !$blocking) {
+        return aigrader_dashboard_query_ungraded_rows();
+    }
+
+    $cache = cache::make('block_aigrader_dashboard', 'ungradeddata');
+    $key = aigrader_dashboard_cache_key();
+    $cached = $cache->get($key);
+
+    $hasrows = is_array($cached) && isset($cached['generated'], $cached['rows']);
+    $fresh = $hasrows && (time() - (int) $cached['generated']) < $ttl;
+
+    if ($fresh && !$blocking) {
+        return $cached['rows'];
+    }
+
+    // One refresher at a time. A zero timeout means a request that cannot get the lock
+    // carries on immediately with whatever it already has.
+    $lockfactory = \core\lock\lock_config::get_lock_factory('block_aigrader_dashboard_ungraded');
+    $lock = $lockfactory->get_lock('ungradeddata', $blocking ? 30 : 0);
+
+    if (!$lock) {
+        return $hasrows ? $cached['rows'] : [];
+    }
+
+    try {
+        // Re-read inside the lock: another request may have refreshed while this one
+        // waited, in which case there is nothing left to do.
+        $cached = $cache->get($key);
+        $hasrows = is_array($cached) && isset($cached['generated'], $cached['rows']);
+        if (!$blocking && $hasrows && (time() - (int) $cached['generated']) < $ttl) {
+            return $cached['rows'];
+        }
+
+        $rows = aigrader_dashboard_query_ungraded_rows();
+        $cache->set($key, ['generated' => time(), 'rows' => $rows]);
+        return $rows;
+    } finally {
+        $lock->release();
+    }
+}
+
+/**
+ * Recalculate the site-wide rows and store them, whatever the cache currently holds.
+ *
+ * Called by the scheduled task so the expensive query runs on cron rather than while
+ * somebody is waiting for a page.
+ *
+ * @return int Number of course/quiz rows stored.
+ */
+function aigrader_dashboard_warm_cache(): int {
+    return count(aigrader_dashboard_get_rows_cached(true));
+}
+
+/**
+ * Keep only the rows belonging to the given courses.
+ *
+ * The course restriction used to live in the SQL. It only ever chose which grouped rows
+ * came back — it never altered a count, because every count is already confined to its own
+ * course — so applying it here produces the same answer from one shared result.
+ *
+ * @param stdClass[] $rows
+ * @param int[]|null $gradablecourseids Null for every course.
+ * @return stdClass[]
+ */
+function aigrader_dashboard_filter_rows_by_courses(array $rows, ?array $gradablecourseids): array {
+    if ($gradablecourseids === null) {
+        return $rows;
+    }
+
+    $allowed = array_flip(array_map('intval', $gradablecourseids));
+    $filtered = [];
+    foreach ($rows as $key => $row) {
+        if (isset($allowed[(int) $row->courseid])) {
+            $filtered[$key] = $row;
+        }
+    }
+    return $filtered;
+}
+
+/**
  * Get ungraded essay data.
  *
  * v2.1.0: this is now the ONLY copy of this query. The block class and the notification
@@ -294,10 +464,10 @@ function aigrader_dashboard_cache_ttl(): int {
  * apart (the task never received the RC3 rewrite and silently dropped rows through a
  * non-unique first column). Both now delegate here.
  *
- * v2.2.0: the query result is cached. This function runs on every page load that renders
- * the block, for every user who can see it, and on a site with a long attempt history the
- * aggregation is expensive. Only the raw query result is cached; the overdue calculation
- * is redone on every call so an essay still crosses the overdue threshold on time.
+ * v2.2.0: the query result is cached. v2.3.0: one site-wide result is cached for everyone,
+ * refreshed on cron, and filtered to the caller's courses here. Overdue status is still
+ * recalculated on every call, so an essay crosses the threshold on time regardless of how
+ * old the cached counts are.
  *
  * @param int[]|null $gradablecourseids Course IDs to report on, or null for every course
  *                                        (used by the scheduled notification task).
@@ -314,36 +484,11 @@ function aigrader_dashboard_get_ungraded_data(?array $gradablecourseids = null, 
         return ['courses' => [], 'total' => 0, 'overdue' => 0];
     }
 
-    $ttl = aigrader_dashboard_cache_ttl();
-    $records = null;
-    $cache = null;
-    $cachekey = null;
+    $records = $usecache
+        ? aigrader_dashboard_get_rows_cached()
+        : aigrader_dashboard_query_ungraded_rows();
 
-    if ($usecache && $ttl > 0) {
-        // The key covers everything that changes the row set: which courses were asked
-        // for, and the two settings that add or remove WHERE clauses. It deliberately
-        // does not cover the overdue threshold, which is applied after the cache.
-        $cachekey = sha1(json_encode([
-            $gradablecourseids === null ? null : array_values(array_unique(array_map('intval', $gradablecourseids))),
-            aigrader_dashboard_hide_inactive_enabled(),
-        ]));
-
-        $cache = cache::make('block_aigrader_dashboard', 'ungradeddata');
-        $cached = $cache->get($cachekey);
-
-        if (is_array($cached) && isset($cached['generated'], $cached['rows'])
-                && (time() - (int) $cached['generated']) < $ttl) {
-            $records = $cached['rows'];
-        }
-    }
-
-    if ($records === null) {
-        $records = aigrader_dashboard_query_ungraded_rows($gradablecourseids);
-
-        if ($cache !== null && $cachekey !== null) {
-            $cache->set($cachekey, ['generated' => time(), 'rows' => $records]);
-        }
-    }
+    $records = aigrader_dashboard_filter_rows_by_courses($records, $gradablecourseids);
 
     $totaloverdue = 0;
 
