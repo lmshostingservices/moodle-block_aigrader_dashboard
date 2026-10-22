@@ -1,3 +1,12 @@
+## [v2.3.1] - 2026-10-22
+
+### Fixed
+
+- Register the Dashboard capability before older upgrade steps assign it, preventing
+  a missing-capability error while upgrading an older Moodle installation.
+- Preserve existing role permissions and context boundaries. No dashboard, image,
+  pricing or credit-billing behaviour has changed.
+
 ## [v2.3.0] - 2026-10-02
 
 ### What's new

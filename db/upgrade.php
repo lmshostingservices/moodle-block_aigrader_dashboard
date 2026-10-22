@@ -32,6 +32,10 @@ function xmldb_block_aigrader_dashboard_upgrade($oldversion) {
     global $DB;
 
     if ($oldversion < 2025120103) {
+        // Moodle registers incoming capabilities after the plugin's upgrade script.
+        if (!get_capability_info('block/aigrader_dashboard:myaddinstance', false)) {
+            update_capabilities('block_aigrader_dashboard');
+        }
         // Assign myaddinstance capability to the authenticated user role at system context.
         $systemcontext = context_system::instance();
         // Get the authenticated user role (this is what users have at system level).
@@ -115,6 +119,10 @@ function xmldb_block_aigrader_dashboard_upgrade($oldversion) {
             opcache_reset();
         }
         upgrade_block_savepoint(true, 2026060408, 'aigrader_dashboard');
+    }
+
+    if ($oldversion < 2026102200) {
+        upgrade_block_savepoint(true, 2026102200, 'aigrader_dashboard');
     }
 
     return true;
