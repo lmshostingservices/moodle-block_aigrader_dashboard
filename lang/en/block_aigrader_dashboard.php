@@ -91,3 +91,17 @@ $string['cachedef_ungradeddata'] = 'Ungraded essay counts per course and quiz';
 $string['cache_ttl'] = 'Dashboard cache lifetime';
 $string['cache_ttl_desc'] = 'How long, in seconds, the dashboard figures stay usable before they are recalculated. A scheduled task refreshes them every five minutes, so in normal operation nobody ever waits for the calculation. Leave this comfortably longer than that gap. Set to 0 to recalculate on every page load, which is only sensible on small sites.';
 $string['task_warm_cache'] = 'Refresh AI Grader Dashboard figures';
+
+// Dashboard layout (v2.4.0).
+$string['stat_to_grade'] = 'Essay questions to grade';
+$string['stat_courses'] = 'Courses';
+$string['stat_quizzes'] = 'Quizzes';
+$string['col_course'] = 'Course';
+$string['col_quiz'] = 'Quiz';
+$string['col_tograde'] = 'To grade';
+$string['col_status'] = 'Status';
+$string['status_overdue'] = 'Overdue · waiting {$a}';
+$string['status_duesoon'] = 'Due soon · waiting {$a}';
+$string['status_ontime'] = 'On time';
+$string['total'] = 'Total';
+$string['total_overdue'] = '{$a} overdue';

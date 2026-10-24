@@ -1,3 +1,24 @@
+## [v2.4.0] - 2026-10-24
+
+### What's new
+
+- **A new look.** The block has been rebuilt to the LMS Labs design system: four headline
+  figures across the top, then one clean row per quiz with a colour-coded status, and a
+  total at the foot.
+- **See what matters first.** Overdue quizzes sort to the top, then whatever has been
+  waiting longest.
+- **Status in words, not just colour.** Every row says *Overdue*, *Due soon* or *On time*
+  and how long the oldest essay has been waiting, so the table reads correctly for anyone
+  who cannot distinguish the colours.
+- The *View all courses* page has been restyled to match.
+
+### Notes
+
+- Figures, overdue rules, permissions and the course list are unchanged. This release
+  changes presentation only.
+- The status shown is based on how long the oldest ungraded essay has been waiting against
+  your overdue threshold, which is what the block has always measured.
+
 ## [v2.3.1] - 2026-10-22
 
 ### Fixed

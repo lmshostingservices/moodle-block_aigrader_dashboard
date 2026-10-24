@@ -1,649 +1,704 @@
-/* =====================================================
-   AI GRADER DASHBOARD BLOCK - World-Class Design
-   Design System: EssayGrader AI Premium SaaS Theme v1.0
-   Bootstrap 5 Compatible | Moodle 4 & 5
-   Matches AI Quick Links Block styling
-   ===================================================== */
+/* =====================================================================
+ * AI Grader Dashboard block.
+ *
+ * Everything is scoped under .block_aigrader_dashboard .agd (and .agd-page for
+ * the standalone View all page), so nothing here can reach the rest of Moodle.
+ * The design tokens are declared on that root rather than on :root for the same
+ * reason - a theme or another plugin is never affected by them.
+ *
+ * Colour carries meaning here, never decoration: blue is action, green is on
+ * time, amber needs attention, red is overdue, slate is neutral. Every tone is
+ * also spelled out in words next to it, so the table is still readable without
+ * colour vision.
+ * ===================================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap');
+.block_aigrader_dashboard .agd,
+.agd-page {
+    --ag-primary: #2563eb;
+    --ag-success: #16a34a;
+    --ag-warning: #d97706;
+    --ag-danger: #dc2626;
+    --ag-neutral: #64748b;
+    --ag-indigo: #4f46e5;
+    --ag-teal: #0d9488;
 
-/* ============================================================
-   DESIGN TOKENS - EssayGrader AI Premium SaaS Theme
-   Matches homepage styling (Stripe/Linear/Notion inspired)
-   Primary: Blue (217° hue) - Trust, Professional
-   ============================================================ */
-.agd-container {
-    /* Primary Colors */
-    --agd-primary: hsl(217deg 91% 60%);
-    --agd-primary-hover: hsl(217deg 91% 50%);
-    --agd-primary-light: hsl(217deg 91% 95%);
-    --agd-primary-foreground: hsl(0deg 0% 100%);
+    --ag-text: #1d2129;
+    --ag-muted: #626c7a;
+    --ag-border: #dee2e8;
+    --ag-input-border: #cbd5e1;
+    --ag-subtle-bg: #f8f9fb;
+    --ag-track: #e2e8f0;
+    --ag-row-highlight: #eff6ff;
 
-    /* Semantic Colors */
-    --agd-success: hsl(142deg 76% 36%);
-    --agd-success-light: hsl(142deg 76% 95%);
-    --agd-warning: hsl(27deg 87% 50%);
-    --agd-warning-light: hsl(27deg 87% 95%);
-    --agd-danger: hsl(0deg 84% 60%);
-    --agd-danger-light: hsl(0deg 84% 95%);
+    --ag-radius-card: 14px;
+    --ag-radius-inner: 12px;
+    --ag-radius-btn: 8px;
 
-    /* Neutral Colors */
-    --agd-text: hsl(0deg 0% 9%);
-    --agd-text-muted: hsl(217deg 8% 35%);
-    --agd-text-tertiary: hsl(217deg 8% 55%);
-    --agd-border: hsl(0deg 0% 89%);
-    --agd-bg: hsl(0deg 0% 98%);
-    --agd-card-bg: hsl(0deg 0% 100%);
-
-    /* Border Radius */
-    --agd-radius-sm: 4px;
-    --agd-radius: 6px;
-    --agd-radius-lg: 8px;
-
-    /* Shadows */
-    --agd-shadow-sm: 0 1px 3px rgb(0 0 0 / 8%), 0 1px 2px rgb(0 0 0 / 4%);
-    --agd-shadow: 0 4px 6px -1px rgb(0 0 0 / 8%), 0 2px 4px -2px rgb(0 0 0 / 4%);
-    --agd-shadow-md: 0 10px 15px -3px rgb(0 0 0 / 8%), 0 4px 6px -4px rgb(0 0 0 / 4%);
-
-    /* Transitions */
-    --agd-transition: 150ms ease;
-
-    /* Typography - Matches essaygraderai.app */
-    font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    font-size: 14px;
-    line-height: 1.5;
-    color: var(--agd-text);
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-
-    /* Use default Moodle block styling - no custom background/border/shadow */
+    font-family: Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+    color: var(--ag-text);
 }
 
-/* Content area padding */
-.agd-content {
-    padding: 12px;
-}
+/* ---------------------------------------------------------------------
+ * Card head
+ * ------------------------------------------------------------------- */
 
-/* =============================================================
-   DARK MODE - Moodle Compatible
-   ============================================================= */
-.dark .agd-container,
-body.dark .agd-container,
-body[data-bs-theme="dark"] .agd-container {
-    --agd-bg: hsl(222deg 47% 7%);
-    --agd-card-bg: hsl(222deg 47% 9%);
-    --agd-text: hsl(0deg 0% 98%);
-    --agd-text-muted: hsl(217deg 8% 70%);
-    --agd-text-tertiary: hsl(217deg 8% 55%);
-    --agd-border: hsl(222deg 30% 18%);
-    --agd-primary-light: hsl(217deg 91% 15%);
-    --agd-success-light: hsl(142deg 76% 12%);
-    --agd-warning-light: hsl(27deg 87% 12%);
-    --agd-danger-light: hsl(0deg 84% 12%);
-    --agd-shadow-sm: 0 1px 3px rgb(0 0 0 / 40%);
-    --agd-shadow: 0 4px 6px -1px rgb(0 0 0 / 40%);
-    --agd-shadow-md: 0 10px 15px -3px rgb(0 0 0 / 40%);
-
-    background-color: hsl(222deg 47% 9%);
-}
-
-/* ----- Summary Stats ----- */
-.agd-summary {
-    display: flex;
-    gap: 12px;
-    margin-bottom: 16px;
-    flex-wrap: wrap;
-}
-
-.agd-summary-stat {
+.block_aigrader_dashboard .agd-head,
+.agd-page .agd-head {
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 14px 18px;
-    border-radius: var(--agd-radius);
-    flex: 1;
-    min-width: 120px;
+    margin-bottom: 18px;
 }
 
-.agd-stat-success {
-    background: linear-gradient(135deg, #dcfce7 0%, #f0fdf4 100%);
-    border: 1px solid #86efac;
-    color: #166534;
-}
-
-.agd-stat-warning {
-    background: linear-gradient(135deg, #fef3c7 0%, #fffbeb 100%);
-    border: 1px solid #fcd34d;
-    color: #92400e;
-}
-
-.agd-stat-danger {
-    background: linear-gradient(135deg, #fee2e2 0%, #fef2f2 100%);
-    border: 1px solid #fca5a5;
-    color: #991b1b;
-}
-
-.agd-stat-number {
-    font-size: 28px;
+.block_aigrader_dashboard .agd-title,
+.agd-page .agd-title {
+    margin: 0;
+    font-size: 22px;
     font-weight: 700;
-    line-height: 1;
+    line-height: 1.2;
+    color: var(--ag-text);
 }
 
-.agd-stat-label {
-    font-size: 12px;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    opacity: 0.9;
+.block_aigrader_dashboard .agd-i,
+.agd-page .agd-i {
+    flex: 0 0 auto;
 }
 
-/* ----- Empty State ----- */
-.agd-empty {
-    text-align: center;
-    padding: 24px 16px;
-    color: var(--agd-text-muted);
-    font-size: 13px;
-    background: var(--agd-bg);
-    border-radius: var(--agd-radius);
-    border: 1px dashed var(--agd-border);
+.block_aigrader_dashboard .agd-i-primary,
+.agd-page .agd-i-primary {
+    color: var(--ag-primary);
 }
 
-/* ----- Course List ----- */
-.agd-courses {
+.block_aigrader_dashboard .agd-i-success,
+.agd-page .agd-i-success {
+    color: var(--ag-success);
+}
+
+/* ---------------------------------------------------------------------
+ * Stat tiles
+ *
+ * A light wash of the meaning colour with a slightly stronger tinted border.
+ * Solid colour is reserved for primary buttons, so the tiles stay calm even
+ * when four of them sit side by side.
+ * ------------------------------------------------------------------- */
+
+.block_aigrader_dashboard .agd-tiles,
+.agd-page .agd-tiles {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.block_aigrader_dashboard .agd-tile,
+.agd-page .agd-tile {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 2px;
+    padding: 14px 16px;
+    border-radius: var(--ag-radius-inner);
+    border: 2px solid;
+    min-width: 0;
 }
 
-.agd-course {
-    background: var(--agd-card-bg);
-    border: 1px solid var(--agd-border);
-    border-radius: var(--agd-radius);
-    overflow: hidden;
-    box-shadow: var(--agd-shadow);
-    transition: box-shadow var(--agd-transition);
-}
-
-.agd-course:hover {
-    box-shadow: var(--agd-shadow-md);
-}
-
-.agd-course-header {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 12px 14px;
-    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-    border-bottom: 1px solid var(--agd-border);
-    font-weight: 600;
+.block_aigrader_dashboard .agd-tile-label,
+.agd-page .agd-tile-label {
     font-size: 13px;
-    color: var(--agd-text);
+    font-weight: 600;
+    line-height: 1.3;
+    color: var(--ag-muted);
 }
 
-/* ----- Icons ----- */
-.agd-icon {
-    width: 16px;
-    height: 16px;
-    flex-shrink: 0;
+.block_aigrader_dashboard .agd-tile-value,
+.agd-page .agd-tile-value {
+    font-size: 34px;
+    font-weight: 700;
+    line-height: 1.1;
+    font-variant-numeric: tabular-nums;
 }
 
-.agd-course-header .agd-icon {
-    color: var(--agd-primary);
-    flex-shrink: 0;
+.block_aigrader_dashboard .agd-tile-primary,
+.agd-page .agd-tile-primary {
+    background: color-mix(in srgb, var(--ag-primary) 7%, #fff);
+    border-color: color-mix(in srgb, var(--ag-primary) 30%, #fff);
 }
 
-.agd-course-name {
-    flex: 1;
-    overflow: hidden;
-    text-overflow: ellipsis;
+.block_aigrader_dashboard .agd-tile-primary .agd-tile-value,
+.agd-page .agd-tile-primary .agd-tile-value {
+    color: var(--ag-primary);
+}
+
+.block_aigrader_dashboard .agd-tile-danger,
+.agd-page .agd-tile-danger {
+    background: color-mix(in srgb, var(--ag-danger) 7%, #fff);
+    border-color: color-mix(in srgb, var(--ag-danger) 30%, #fff);
+}
+
+.block_aigrader_dashboard .agd-tile-danger .agd-tile-value,
+.agd-page .agd-tile-danger .agd-tile-value {
+    color: var(--ag-danger);
+}
+
+.block_aigrader_dashboard .agd-tile-indigo,
+.agd-page .agd-tile-indigo {
+    background: color-mix(in srgb, var(--ag-indigo) 7%, #fff);
+    border-color: color-mix(in srgb, var(--ag-indigo) 30%, #fff);
+}
+
+.block_aigrader_dashboard .agd-tile-indigo .agd-tile-value,
+.agd-page .agd-tile-indigo .agd-tile-value {
+    color: var(--ag-indigo);
+}
+
+.block_aigrader_dashboard .agd-tile-teal,
+.agd-page .agd-tile-teal {
+    background: color-mix(in srgb, var(--ag-teal) 7%, #fff);
+    border-color: color-mix(in srgb, var(--ag-teal) 30%, #fff);
+}
+
+.block_aigrader_dashboard .agd-tile-teal .agd-tile-value,
+.agd-page .agd-tile-teal .agd-tile-value {
+    color: var(--ag-teal);
+}
+
+/* Fallback for browsers without color-mix(). */
+@supports not (background: color-mix(in srgb, #000 7%, #fff)) {
+    .block_aigrader_dashboard .agd-tile-primary,
+    .agd-page .agd-tile-primary { background: #eff6ff; border-color: #bfd4fb; }
+    .block_aigrader_dashboard .agd-tile-danger,
+    .agd-page .agd-tile-danger { background: #fef2f2; border-color: #f4bcbc; }
+    .block_aigrader_dashboard .agd-tile-indigo,
+    .agd-page .agd-tile-indigo { background: #f1f1fd; border-color: #c9c7f7; }
+    .block_aigrader_dashboard .agd-tile-teal,
+    .agd-page .agd-tile-teal { background: #eef8f7; border-color: #b6dedb; }
+}
+
+/* ---------------------------------------------------------------------
+ * Queue table
+ * ------------------------------------------------------------------- */
+
+.block_aigrader_dashboard .agd-tablewrap,
+.agd-page .agd-tablewrap {
+    border: 1px solid var(--ag-border);
+    border-radius: 10px;
+    overflow-x: auto;
+}
+
+.block_aigrader_dashboard .agd-table,
+.agd-page .agd-table {
+    width: 100%;
+    margin: 0;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.block_aigrader_dashboard .agd-table th,
+.agd-page .agd-table th {
+    padding: 10px 14px;
+    text-align: left;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ag-muted);
+    background: var(--ag-subtle-bg);
+    border-bottom: 1px solid var(--ag-border);
     white-space: nowrap;
 }
 
-/* ----- Quiz List ----- */
-.agd-quizzes {
-    padding: 8px;
+.block_aigrader_dashboard .agd-table td,
+.agd-page .agd-table td {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--ag-border);
+    vertical-align: middle;
 }
 
-.agd-quiz {
+.block_aigrader_dashboard .agd-table tbody tr:last-child td,
+.agd-page .agd-table tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.block_aigrader_dashboard .agd-num,
+.agd-page .agd-num {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+.block_aigrader_dashboard .agd-course,
+.agd-page .agd-course {
+    font-weight: 500;
+    color: var(--ag-text);
+}
+
+.block_aigrader_dashboard .agd-quiz,
+.agd-page .agd-quiz {
+    color: var(--ag-muted);
+}
+
+.block_aigrader_dashboard .agd-count,
+.agd-page .agd-count {
+    font-weight: 700;
+}
+
+.block_aigrader_dashboard .agd-count-danger,
+.agd-page .agd-count-danger {
+    color: var(--ag-danger);
+}
+
+.block_aigrader_dashboard .agd-count-primary,
+.agd-page .agd-count-primary {
+    color: var(--ag-primary);
+}
+
+.block_aigrader_dashboard .agd-actioncell,
+.agd-page .agd-actioncell {
+    text-align: right;
+    white-space: nowrap;
+}
+
+/* Row status: a solid stripe on the left edge plus a wash across the row. The
+   stripe is drawn with a border so it survives horizontal scrolling. */
+
+.block_aigrader_dashboard .agd-row td:first-child,
+.agd-page .agd-row td:first-child {
+    border-left: 6px solid transparent;
+}
+
+.block_aigrader_dashboard .agd-row-danger td:first-child,
+.agd-page .agd-row-danger td:first-child { border-left-color: var(--ag-danger); }
+
+.block_aigrader_dashboard .agd-row-warning td:first-child,
+.agd-page .agd-row-warning td:first-child { border-left-color: var(--ag-warning); }
+
+.block_aigrader_dashboard .agd-row-success td:first-child,
+.agd-page .agd-row-success td:first-child { border-left-color: var(--ag-success); }
+
+.block_aigrader_dashboard .agd-row-neutral td:first-child,
+.agd-page .agd-row-neutral td:first-child { border-left-color: var(--ag-neutral); }
+
+.block_aigrader_dashboard .agd-row-danger td,
+.agd-page .agd-row-danger td {
+    background: color-mix(in srgb, var(--ag-danger) 6%, #fff);
+}
+
+.block_aigrader_dashboard .agd-row-warning td,
+.agd-page .agd-row-warning td {
+    background: color-mix(in srgb, var(--ag-warning) 6%, #fff);
+}
+
+.block_aigrader_dashboard .agd-table tbody tr:hover td,
+.agd-page .agd-table tbody tr:hover td {
+    background: var(--ag-row-highlight);
+}
+
+.block_aigrader_dashboard .agd-total td,
+.agd-page .agd-total td {
+    background: var(--ag-subtle-bg);
+    border-top: 1px solid var(--ag-border);
+    border-bottom: 0;
+    font-weight: 700;
+    padding: 12px 14px;
+}
+
+/* ---------------------------------------------------------------------
+ * Badges - always carrying their own text, never colour alone
+ * ------------------------------------------------------------------- */
+
+.block_aigrader_dashboard .agd-badge,
+.agd-page .agd-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    border: 2px solid;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.5;
+    white-space: nowrap;
+}
+
+.block_aigrader_dashboard .agd-badge-danger,
+.agd-page .agd-badge-danger {
+    color: var(--ag-danger);
+    background: color-mix(in srgb, var(--ag-danger) 12%, #fff);
+    border-color: color-mix(in srgb, var(--ag-danger) 45%, #fff);
+}
+
+.block_aigrader_dashboard .agd-badge-warning,
+.agd-page .agd-badge-warning {
+    color: var(--ag-warning);
+    background: color-mix(in srgb, var(--ag-warning) 12%, #fff);
+    border-color: color-mix(in srgb, var(--ag-warning) 45%, #fff);
+}
+
+.block_aigrader_dashboard .agd-badge-success,
+.agd-page .agd-badge-success {
+    color: var(--ag-success);
+    background: color-mix(in srgb, var(--ag-success) 12%, #fff);
+    border-color: color-mix(in srgb, var(--ag-success) 45%, #fff);
+}
+
+.block_aigrader_dashboard .agd-badge-neutral,
+.agd-page .agd-badge-neutral {
+    color: var(--ag-neutral);
+    background: color-mix(in srgb, var(--ag-neutral) 12%, #fff);
+    border-color: color-mix(in srgb, var(--ag-neutral) 45%, #fff);
+}
+
+@supports not (background: color-mix(in srgb, #000 7%, #fff)) {
+    .block_aigrader_dashboard .agd-badge-danger,
+    .agd-page .agd-badge-danger { background: #fdeaea; border-color: #f0a8a8; }
+    .block_aigrader_dashboard .agd-badge-warning,
+    .agd-page .agd-badge-warning { background: #fdf2e3; border-color: #efc489; }
+    .block_aigrader_dashboard .agd-badge-success,
+    .agd-page .agd-badge-success { background: #e7f6ec; border-color: #9bd7ae; }
+    .block_aigrader_dashboard .agd-badge-neutral,
+    .agd-page .agd-badge-neutral { background: #eef0f3; border-color: #b4bcc7; }
+    .block_aigrader_dashboard .agd-row-danger td,
+    .agd-page .agd-row-danger td { background: #fef5f5; }
+    .block_aigrader_dashboard .agd-row-warning td,
+    .agd-page .agd-row-warning td { background: #fdf8f0; }
+}
+
+/* ---------------------------------------------------------------------
+ * Buttons
+ * ------------------------------------------------------------------- */
+
+.block_aigrader_dashboard .agd-btn,
+.agd-page .agd-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    height: 36px;
+    padding: 0 14px;
+    border-radius: var(--ag-radius-btn);
+    border: 2px solid transparent;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color .12s ease, border-color .12s ease, color .12s ease;
+}
+
+.block_aigrader_dashboard .agd-btn:focus-visible,
+.agd-page .agd-btn:focus-visible {
+    outline: 2px solid var(--ag-primary);
+    outline-offset: 2px;
+}
+
+.block_aigrader_dashboard .agd-btn-primary,
+.agd-page .agd-btn-primary {
+    background: var(--ag-primary);
+    color: #fff;
+}
+
+.block_aigrader_dashboard .agd-btn-primary:hover,
+.block_aigrader_dashboard .agd-btn-primary:focus,
+.agd-page .agd-btn-primary:hover,
+.agd-page .agd-btn-primary:focus {
+    background: #1d4ed8;
+    color: #fff;
+    text-decoration: none;
+}
+
+.block_aigrader_dashboard .agd-btn-secondary,
+.agd-page .agd-btn-secondary {
+    background: #fff;
+    color: var(--ag-primary);
+    border-color: color-mix(in srgb, var(--ag-primary) 35%, #fff);
+}
+
+.block_aigrader_dashboard .agd-btn-secondary:hover,
+.block_aigrader_dashboard .agd-btn-secondary:focus,
+.agd-page .agd-btn-secondary:hover,
+.agd-page .agd-btn-secondary:focus {
+    background: var(--ag-row-highlight);
+    color: var(--ag-primary);
+    text-decoration: none;
+}
+
+@supports not (border-color: color-mix(in srgb, #000 7%, #fff)) {
+    .block_aigrader_dashboard .agd-btn-secondary,
+    .agd-page .agd-btn-secondary { border-color: #a8c4f6; }
+}
+
+/* ---------------------------------------------------------------------
+ * Empty state, overflow warning, footer
+ * ------------------------------------------------------------------- */
+
+.block_aigrader_dashboard .agd-empty,
+.agd-page .agd-empty {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 22px;
+    border: 1px solid var(--ag-border);
+    border-radius: var(--ag-radius-inner);
+    background: var(--ag-subtle-bg);
+    color: var(--ag-muted);
+    font-size: 14px;
+}
+
+.block_aigrader_dashboard .agd-warn,
+.agd-page .agd-warn {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-top: 14px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--ag-warning);
+    background: color-mix(in srgb, var(--ag-warning) 10%, #fff);
+    border: 2px solid color-mix(in srgb, var(--ag-warning) 40%, #fff);
+}
+
+.block_aigrader_dashboard .agd-foot,
+.agd-page .agd-foot {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 16px;
+}
+
+/* The proctoring quicklink is rendered by a separate method; pull its wrapper
+   into the footer row rather than letting it stack underneath. */
+.block_aigrader_dashboard .agd-foot .agd-report-link,
+.agd-page .agd-foot .agd-report-link {
+    margin: 0;
+}
+
+/* ---------------------------------------------------------------------
+ * Responsive
+ * ------------------------------------------------------------------- */
+
+@media (max-width: 900px) {
+    .block_aigrader_dashboard .agd-tiles,
+    .agd-page .agd-tiles {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .block_aigrader_dashboard .agd-tile-value,
+    .agd-page .agd-tile-value {
+        font-size: 28px;
+    }
+}
+
+@media (max-width: 480px) {
+    .block_aigrader_dashboard .agd-tiles,
+    .agd-page .agd-tiles {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Blocks are narrow; drop the quiz column rather than squeezing everything. */
+@media (max-width: 700px) {
+    .block_aigrader_dashboard .agd-table .agd-quiz,
+    .block_aigrader_dashboard .agd-table th:nth-child(2) {
+        display: none;
+    }
+}
+
+/* ---------------------------------------------------------------------
+ * Dark mode, where the theme asks for it
+ * ------------------------------------------------------------------- */
+
+@media (prefers-color-scheme: dark) {
+    body.theme-dark .block_aigrader_dashboard .agd,
+    body.theme-dark .agd-page {
+        --ag-text: #e8eaed;
+        --ag-muted: #a0a8b4;
+        --ag-border: #343a44;
+        --ag-subtle-bg: #1e232b;
+        --ag-track: #343a44;
+        --ag-row-highlight: #1b2535;
+    }
+}
+
+/* =====================================================================
+ * View all courses page (viewall.php)
+ *
+ * Same tokens, same vocabulary - a page-width version of the block's queue.
+ * ===================================================================== */
+
+.agd-page .agd-viewall-back {
+    margin-bottom: 14px;
+}
+
+.agd-page .agd-back-link {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ag-primary);
+    text-decoration: none;
+}
+
+.agd-page .agd-back-link:hover {
+    text-decoration: underline;
+}
+
+.agd-page .agd-viewall-header {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 6px;
+}
+
+.agd-page .agd-viewall-header h2 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--ag-text);
+}
+
+.agd-page .agd-viewall-stats {
+    display: flex;
+    gap: 8px;
+}
+
+.agd-page .agd-stat-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 12px;
+    border-radius: 999px;
+    border: 2px solid;
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.agd-page .agd-stat-pill.agd-stat-warning {
+    color: var(--ag-warning);
+    background: color-mix(in srgb, var(--ag-warning) 12%, #fff);
+    border-color: color-mix(in srgb, var(--ag-warning) 45%, #fff);
+}
+
+.agd-page .agd-stat-pill.agd-stat-danger {
+    color: var(--ag-danger);
+    background: color-mix(in srgb, var(--ag-danger) 12%, #fff);
+    border-color: color-mix(in srgb, var(--ag-danger) 45%, #fff);
+}
+
+.agd-page .agd-viewall-count {
+    margin-bottom: 20px;
+    font-size: 14px;
+    color: var(--ag-muted);
+}
+
+.agd-page .agd-viewall-courses {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.agd-page .agd-viewall-course {
+    border: 1px solid var(--ag-border);
+    border-radius: var(--ag-radius-card);
+    overflow: hidden;
+    background: #fff;
+}
+
+.agd-page .agd-viewall-course-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    padding: 10px 12px;
-    border-radius: var(--agd-radius-sm);
-    transition: background var(--agd-transition);
+    padding: 14px 18px;
+    background: var(--ag-subtle-bg);
+    border-bottom: 1px solid var(--ag-border);
 }
 
-.agd-quiz:hover {
-    background: var(--agd-bg);
+.agd-page .agd-viewall-course-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--ag-text);
 }
 
-.agd-quiz-info {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex: 1;
-    min-width: 0;
-}
-
-.agd-quiz-info .agd-icon {
-    color: var(--agd-text-muted);
-    flex-shrink: 0;
-}
-
-.agd-quiz-name {
-    font-size: 13px;
-    color: var(--agd-text);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.agd-quiz-actions {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-shrink: 0;
-}
-
-/* ----- Badges ----- */
-.agd-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    padding: 4px 10px;
-    font-size: 11px;
-    font-weight: 600;
-    border-radius: 20px;
-    white-space: nowrap;
-}
-
-.agd-badge-warning {
-    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-    color: #92400e;
-    border: 1px solid #fcd34d;
-}
-
-.agd-badge-danger {
-    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
-    color: #991b1b;
-    border: 1px solid #fca5a5;
-    animation: agd-pulse 2s infinite;
-}
-
-.agd-badge-success {
-    background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
-    color: #166534;
-    border: 1px solid #86efac;
-}
-
-@keyframes agd-pulse {
-    0%,
-    100% {
-        opacity: 1;
-    }
-
-    50% {
-        opacity: 0.7;
-    }
-}
-
-/* ----- Buttons ----- */
-.agd-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 12px;
-    font-size: 12px;
-    font-weight: 600;
-    border-radius: var(--agd-radius-sm);
-    border: none;
-    cursor: pointer;
-    /* stylelint-disable-next-line declaration-no-important -- Overrides Moodle theme link styling for button links. */
-    text-decoration: none !important;
-    transition: all var(--agd-transition);
-    white-space: nowrap;
-}
-
-.agd-btn-primary {
-    background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
-    /* stylelint-disable-next-line declaration-no-important -- Preserves button text contrast against Moodle theme link colours. */
-    color: #fff !important;
-    box-shadow: 0 2px 4px rgb(14 165 233 / 30%);
-}
-
-.agd-btn-primary:hover {
-    background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgb(14 165 233 / 40%);
-    /* stylelint-disable-next-line declaration-no-important -- Preserves button text contrast against Moodle theme link colours. */
-    color: #fff !important;
-    /* stylelint-disable-next-line declaration-no-important -- Overrides Moodle hover link styling for button links. */
-    text-decoration: none !important;
-}
-
-.agd-btn-primary:active {
-    transform: translateY(0);
-    box-shadow: 0 1px 2px rgb(14 165 233 / 30%);
-}
-
-.agd-btn-secondary {
-    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-    /* stylelint-disable-next-line declaration-no-important -- Preserves button text contrast against Moodle theme link colours. */
-    color: #fff !important;
-    box-shadow: 0 2px 4px rgb(59 130 246 / 30%);
-}
-
-.agd-btn-secondary:hover {
-    background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgb(59 130 246 / 40%);
-    /* stylelint-disable-next-line declaration-no-important -- Preserves button text contrast against Moodle theme link colours. */
-    color: #fff !important;
-    /* stylelint-disable-next-line declaration-no-important -- Overrides Moodle hover link styling for button links. */
-    text-decoration: none !important;
-}
-
-.agd-btn-secondary:active {
-    transform: translateY(0);
-    box-shadow: 0 1px 2px rgb(59 130 246 / 30%);
-}
-
-/* ----- Overflow Warning Banner ----- */
-
-/* Shown when the block is displaying fewer courses than exist (limit = 10).    */
-
-/* Amber colour signals a potential risk — teacher may be missing marking tasks. */
-.agd-overflow-warning {
-    display: flex;
-    align-items: flex-start;
-    gap: 8px;
-    margin-top: 12px;
-    padding: 10px 12px;
-    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 30%, #fef3c7 100%);
-    border: 1px solid #f59e0b;
-    border-radius: var(--agd-radius);
-    font-size: 12px;
-    font-weight: 500;
-    color: #92400e;
-    line-height: 1.4;
-}
-
-.agd-overflow-warning .agd-icon {
-    flex-shrink: 0;
-    margin-top: 1px;
-    color: #b45309;
-}
-
-.dark .agd-overflow-warning,
-body.dark .agd-overflow-warning,
-body[data-bs-theme="dark"] .agd-overflow-warning {
-    background: linear-gradient(135deg, #451a03 0%, #78350f 100%);
-    border-color: #b45309;
-    color: #fde68a;
-}
-
-.dark .agd-overflow-warning .agd-icon,
-body.dark .agd-overflow-warning .agd-icon,
-body[data-bs-theme="dark"] .agd-overflow-warning .agd-icon {
-    color: #fbbf24;
-}
-
-/* ----- View All Link ----- */
-
-/* Always shown at bottom of course list. Becomes more prominent (primary button) */
-
-/* when the block is hiding courses due to the 10-course limit.                   */
-.agd-viewall-link {
-    margin-top: 12px;
-    text-align: center;
-}
-
-.agd-viewall-link .agd-btn {
+.agd-page .agd-viewall-table {
     width: 100%;
-    justify-content: center;
-    padding: 10px 16px;
-    font-size: 13px;
+    margin: 0;
+    border-collapse: collapse;
+    font-size: 14px;
 }
 
-/* When courses are overflowing the block limit, bump up visual weight */
-.agd-viewall-overflow .agd-btn {
+.agd-page .agd-viewall-table th {
+    padding: 10px 18px;
+    text-align: left;
     font-size: 13px;
     font-weight: 700;
-    letter-spacing: 0.2px;
+    color: var(--ag-muted);
+    border-bottom: 1px solid var(--ag-border);
+    white-space: nowrap;
 }
 
-/* ----- Report Link ----- */
-.agd-report-link {
-    margin-top: 16px;
-    padding-top: 16px;
-    border-top: 1px solid var(--agd-border);
-    text-align: center;
+.agd-page .agd-viewall-table td {
+    padding: 12px 18px;
+    border-bottom: 1px solid var(--ag-border);
+    vertical-align: middle;
 }
 
-.agd-report-link .agd-btn {
-    width: 100%;
-    justify-content: center;
-    padding: 10px 16px;
-    font-size: 13px;
+.agd-page .agd-viewall-table tr:last-child td {
+    border-bottom: 0;
 }
 
-.agd-icon-sm {
-    width: 14px;
-    height: 14px;
+.agd-page .agd-viewall-th-count,
+.agd-page .agd-viewall-th-overdue,
+.agd-page .agd-viewall-th-action {
+    text-align: right;
 }
 
-.agd-icon-xs {
+.agd-page .agd-viewall-table td:nth-child(2) {
+    text-align: right;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+}
+
+.agd-page .agd-viewall-row-overdue td {
+    background: color-mix(in srgb, var(--ag-danger) 6%, #fff);
+}
+
+.agd-page .agd-viewall-row-overdue td:first-child {
+    border-left: 6px solid var(--ag-danger);
+}
+
+.agd-page .agd-viewall-empty {
+    padding: 22px;
+    border: 1px solid var(--ag-border);
+    border-radius: var(--ag-radius-inner);
+    background: var(--ag-subtle-bg);
+    color: var(--ag-muted);
+}
+
+.agd-page .agd-btn-sm {
+    height: 32px;
+    padding: 0 12px;
+    font-size: 12px;
+}
+
+@supports not (background: color-mix(in srgb, #000 7%, #fff)) {
+    .agd-page .agd-stat-pill.agd-stat-warning { background: #fdf2e3; border-color: #efc489; }
+    .agd-page .agd-stat-pill.agd-stat-danger { background: #fdeaea; border-color: #f0a8a8; }
+    .agd-page .agd-viewall-row-overdue td { background: #fef5f5; }
+}
+
+/* Icons emitted by render_proctoring_quicklink(), which keeps its own markup. */
+.block_aigrader_dashboard .agd-icon,
+.agd-page .agd-icon {
+    flex: 0 0 auto;
+    vertical-align: middle;
+}
+
+.block_aigrader_dashboard .agd-icon-sm,
+.agd-page .agd-icon-sm {
+    width: 16px;
+    height: 16px;
+}
+
+.block_aigrader_dashboard .agd-icon-xs,
+.agd-page .agd-icon-xs {
     width: 12px;
     height: 12px;
-}
-
-/* ----- Responsive Design ----- */
-@media (width <= 480px) {
-    .agd-summary {
-        flex-direction: column;
-    }
-
-    .agd-summary-stat {
-        min-width: 100%;
-    }
-
-    .agd-quiz {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 8px;
-    }
-
-    .agd-quiz-actions {
-        width: 100%;
-        justify-content: space-between;
-    }
-
-    .agd-stat-number {
-        font-size: 24px;
-    }
-}
-
-/* ----- Dark Mode Support ----- */
-@media (prefers-color-scheme: dark) {
-    .agd-container {
-        --agd-text: #e2e8f0;
-        --agd-text-muted: #94a3b8;
-        --agd-border: #334155;
-        --agd-bg: #1e293b;
-        --agd-card-bg: #0f172a;
-
-        background-color: #1f2937;
-    }
-
-    .agd-course-header {
-        background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-    }
-
-    .agd-quiz:hover {
-        background: #1e293b;
-    }
-}
-
-/* ----- Moodle Theme Compatibility ----- */
-
-/* Use default Moodle block styling - background, border, shadow, and header */
-
-/* Bootstrap 5 Moodle overrides */
-/* stylelint-disable selector-class-pattern -- Moodle component classes use underscores. */
-.block_aigrader_dashboard .agd-btn {
-    line-height: 1.4;
-}
-
-.block_aigrader_dashboard a.agd-btn:hover,
-.block_aigrader_dashboard a.agd-btn:focus {
-    /* stylelint-disable-next-line declaration-no-important -- Overrides Bootstrap/Moodle link hover decoration. */
-    text-decoration: none !important;
-}
-
-/* Ensure proper display in Moodle's block regions */
-.block.block_aigrader_dashboard {
-    margin-bottom: 1rem;
-}
-
-.block.block_aigrader_dashboard .block-content {
-    padding: 0;
-}
-
-.pagelayout-mydashboard .block_aigrader_dashboard .agd-container,
-.pagelayout-admin .block_aigrader_dashboard .agd-container {
-    max-width: 100%;
-}
-/* stylelint-enable selector-class-pattern */
-
-/* ----- Reports Dropdown ----- */
-.agd-reports-dropdown {
-    position: relative;
-}
-
-.agd-reports-btn {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 12px;
-    font-size: 13px;
-    font-weight: 500;
-    color: #fff;
-    background: rgb(255 255 255 / 15%);
-    border: 1px solid rgb(255 255 255 / 25%);
-    border-radius: var(--agd-radius-sm);
-    cursor: pointer;
-    transition: all var(--agd-transition);
-    white-space: nowrap;
-    backdrop-filter: blur(4px);
-}
-
-.agd-reports-btn:hover {
-    background: rgb(255 255 255 / 25%);
-    border-color: rgb(255 255 255 / 35%);
-}
-
-.agd-reports-btn svg {
-    width: 16px;
-    height: 16px;
-    stroke: currentcolor;
-    flex-shrink: 0;
-}
-
-.agd-dropdown-arrow {
-    transition: transform var(--agd-transition);
-}
-
-.agd-reports-dropdown.open .agd-dropdown-arrow {
-    transform: rotate(180deg);
-}
-
-.agd-dropdown-menu {
-    position: absolute;
-    top: calc(100% + 4px);
-    right: 0;
-    min-width: 200px;
-    background: var(--agd-card-bg, #fff);
-    border: 1px solid var(--agd-border, #e5e7eb);
-    border-radius: var(--agd-radius);
-    box-shadow: var(--agd-shadow-md);
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(-8px);
-    transition: all var(--agd-transition);
-    z-index: 1000;
-    overflow: hidden;
-}
-
-.agd-reports-dropdown.open .agd-dropdown-menu {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
-}
-
-.agd-dropdown-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 14px;
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--agd-text, #1f2937);
-    /* stylelint-disable-next-line declaration-no-important -- Overrides Moodle theme link styling for dropdown links. */
-    text-decoration: none !important;
-    transition: background var(--agd-transition);
-    border-bottom: 1px solid var(--agd-border, #f3f4f6);
-}
-
-.agd-dropdown-item:last-child {
-    border-bottom: none;
-}
-
-.agd-dropdown-item:hover {
-    background: var(--agd-bg, #f9fafb);
-    /* stylelint-disable-next-line declaration-no-important -- Overrides Moodle hover link styling for dropdown links. */
-    text-decoration: none !important;
-    color: var(--agd-primary, #3b82f6);
-}
-
-.agd-dropdown-item svg {
-    width: 16px;
-    height: 16px;
-    stroke: currentcolor;
-    flex-shrink: 0;
-    opacity: 0.7;
-}
-
-.agd-dropdown-item:hover svg {
-    opacity: 1;
-}
-
-/* Close dropdown when clicking outside */
-.agd-reports-dropdown:focus-within .agd-dropdown-menu {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
-}
-
-/* Dark mode dropdown support */
-/* stylelint-disable no-descending-specificity -- Must follow dropdown state rules so dark theme colours take precedence. */
-.dark .agd-dropdown-menu,
-body.dark .agd-dropdown-menu,
-body[data-bs-theme="dark"] .agd-dropdown-menu {
-    background: hsl(222deg 47% 11%);
-    border-color: hsl(222deg 30% 20%);
-}
-/* stylelint-enable no-descending-specificity */
-
-.dark .agd-dropdown-item,
-body.dark .agd-dropdown-item,
-body[data-bs-theme="dark"] .agd-dropdown-item {
-    color: #e2e8f0;
-    border-bottom-color: hsl(222deg 30% 18%);
-}
-
-.dark .agd-dropdown-item:hover,
-body.dark .agd-dropdown-item:hover,
-body[data-bs-theme="dark"] .agd-dropdown-item:hover {
-    background: hsl(222deg 47% 15%);
 }

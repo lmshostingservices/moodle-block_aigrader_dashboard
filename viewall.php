@@ -61,6 +61,10 @@ $overdue = $data['overdue'];
 
 echo $OUTPUT->header();
 
+// Token root for the shared design system in styles.css. Everything the page
+// renders sits inside this wrapper so the custom properties resolve.
+echo html_writer::start_div('agd-page');
+
 // Back link.
 $dashboardurl = new moodle_url('/my/');
 echo html_writer::div(
@@ -212,5 +216,7 @@ echo html_writer::tag('style', '
 .agd-btn-secondary { background: #6c757d; color: #fff; }
 .agd-btn-secondary:hover { background: #5c636a; color: #fff; }
 ');
+
+echo html_writer::end_div();
 
 echo $OUTPUT->footer();
