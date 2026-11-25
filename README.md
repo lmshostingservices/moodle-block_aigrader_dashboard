@@ -2,7 +2,7 @@
 
 A Moodle™ block that shows graders, at a glance, how many essays are waiting for marking in
 the AI Essay Grader, which quizzes they are in, and which are overdue, with a **Grade now**
-button that opens that quiz's marking queue.
+link that opens that quiz's marking queue.
 
 - Four headline figures: essays to grade, overdue, courses and quizzes.
 - One row per quiz, overdue first, then whatever has waited longest. Every status is in words
@@ -45,10 +45,25 @@ Site administration > Plugins > Blocks > AI Essay Grader dashboard.
 Each grader sees only the courses where they can grade quizzes. Site administrators also get
 links to the AI Essay Grader activity report and, when installed, the proctoring review.
 
-## Responsible AI
+## Responsible AI and the EU AI Act
 
-The block shows no AI output. When the site has paused AI suggestions in the AI Essay Grader,
-the block says so, so graders are not sent to a queue whose AI Grade buttons are hidden.
+The AI Essay Grader suggests marks for essays, which the EU AI Act treats as a high-risk use
+(Annex III, point 3(b): evaluating learning outcomes). This block is part of how graders work
+with that system, so it is built to support the duties that apply to the people who use it:
+
+- **Human oversight (Article 14).** The block shows no AI output and never changes a mark. A
+  short note under the table reminds graders that AI suggestions are drafts, and that no mark
+  reaches the gradebook until a grader checks and approves it.
+- **Stopping the system (Article 26(5)).** When the site has paused AI suggestions in the AI
+  Essay Grader, the block says so, so graders are not sent to a queue whose AI grade buttons
+  are hidden.
+- **Timely review.** Overdue essays come first and show how long they have waited, so a grader
+  has time to review each suggestion properly rather than approve in a rush.
+- **No automated decisions about learners.** The block counts essays waiting for a person to
+  mark them; it does not grade, rank or profile learners.
+
+The AI Essay Grader's own documentation covers transparency to learners, accuracy, logging and
+the provider's obligations.
 
 ## Privacy
 

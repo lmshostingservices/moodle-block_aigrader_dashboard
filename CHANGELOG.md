@@ -3,11 +3,14 @@
 ### What's new
 
 - **Moodle Design System.** The block and the All courses page are built from Moodle Design
-  System buttons, badges and alerts, with Font Awesome icons and the theme's own font. The
-  figures sit on clean cards, each quiz row shows the quiz with its course beneath, and the
-  block follows Moodle's dark mode.
-- **Accessible.** No WCAG 2.2 AA violations in light or dark mode; every Grade now button names
+  System links, badges and alerts, with Font Awesome icons and the theme's own font. Every
+  navigation is an MDS Link (Grade now, All courses, Activity report), status badges carry a
+  short label with the waiting time beneath, the figures sit on clean cards, each quiz row
+  shows the quiz with its course beneath, and the block follows Moodle's dark mode.
+- **Accessible.** No WCAG 2.2 AA violations in light or dark mode; every Grade now link names
   its quiz for screen readers; the table has a caption and row headers.
+- **Human oversight note (EU AI Act, Article 14).** A line under the table reminds graders that
+  AI suggestions are drafts and that no mark reaches the gradebook until a grader approves it.
 - **Paused AI suggestions are shown.** When the site has paused AI suggestions in the AI Essay
   Grader, the block says so.
 

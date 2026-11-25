@@ -57,7 +57,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'block_aigrader_dashboard';
-$plugin->version   = 2026112500;
+$plugin->version   = 2026112501;
 $plugin->requires  = 2024042200;
 $plugin->supported = [404, 503];
 $plugin->maturity  = MATURITY_STABLE;

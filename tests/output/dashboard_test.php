@@ -69,6 +69,35 @@ final class dashboard_test extends \advanced_testcase {
     }
 
     /**
+     * Moodle Design System: navigation uses Links, never Buttons, and status badges carry a short label,
+     * with the waiting time beside them rather than inside the badge.
+     */
+    public function test_design_system(): void {
+        $this->resetAfterTest();
+        $html = dashboard::render($this->data());
+        $this->assertStringNotContainsString('mds-btn', $html);
+        $this->assertStringNotContainsString('btn-primary', $html);
+        $this->assertSame(2, substr_count($html, 'class="mds-link agd-grade"'));
+        $this->assertStringContainsString('mds-badge--has-icon">'
+            . '<i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i>Overdue</span>', $html);
+        $this->assertStringContainsString('<span class="agd-waited">Waiting 2 days</span>', $html);
+        $this->assertStringNotContainsString('·', $html);
+    }
+
+    /**
+     * Graders are reminded that AI suggestions are drafts until they approve them (EU AI Act, Article 14).
+     */
+    public function test_oversight_note(): void {
+        $this->resetAfterTest();
+        $html = dashboard::render($this->data());
+        if (\core_component::get_component_directory('quiz_aigrader')) {
+            $this->assertStringContainsString('No mark reaches the gradebook until a grader checks and approves it.', $html);
+        } else {
+            $this->assertStringNotContainsString('agd-oversight', $html);
+        }
+    }
+
+    /**
      * The full page lists everything and does not link to itself.
      */
     public function test_render_fullpage(): void {

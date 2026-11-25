@@ -24,7 +24,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$string['ai_paused_notice'] = 'AI suggestions are paused on this site. Essays can still be marked by hand in the Essay Grader.';
+$string['ai_paused_notice'] = 'AI suggestions are paused on this site. Essays can still be marked by hand in the AI Essay Grader.';
 $string['aigrader_dashboard'] = 'AI Essay Grader dashboard';
 $string['aigrader_dashboard:addinstance'] = 'Add a new AI Essay Grader dashboard block';
 $string['aigrader_dashboard:myaddinstance'] = 'Add the AI Essay Grader dashboard to the Dashboard';
@@ -81,6 +81,7 @@ $string['notify_overdue_desc'] = 'Send notification when essays have been waitin
 $string['overdue'] = 'Overdue';
 $string['overdue_threshold'] = 'Overdue after (hours)';
 $string['overdue_threshold_desc'] = 'Number of hours after which an ungraded essay is considered overdue.';
+$string['oversight_note'] = 'AI suggestions are drafts. No mark reaches the gradebook until a grader checks and approves it.';
 $string['pluginname'] = 'AI Essay Grader dashboard';
 $string['privacy:metadata'] = 'The AI Essay Grader dashboard block stores no personal data. It counts essays waiting for grading; notification emails go to the addresses an administrator sets, and name courses and quizzes only.';
 $string['proctoring_reports'] = 'Proctoring reports';
@@ -93,9 +94,10 @@ $string['settings_header_desc'] = 'Configure email notifications for ungraded es
 $string['stat_courses'] = 'Courses';
 $string['stat_quizzes'] = 'Quizzes';
 $string['stat_to_grade'] = 'Essays to grade';
-$string['status_duesoon'] = 'Due soon · waiting {$a}';
+$string['status_duesoon'] = 'Due soon';
 $string['status_ontime'] = 'On time';
-$string['status_overdue'] = 'Overdue · waiting {$a}';
+$string['status_overdue'] = 'Overdue';
+$string['status_waiting'] = 'Waiting {$a}';
 $string['table_caption'] = 'Quizzes with essays waiting for grading, overdue first';
 $string['task_send_notifications'] = 'Send AI Essay Grader dashboard notification emails';
 $string['task_warm_cache'] = 'Refresh AI Essay Grader dashboard figures';
@@ -105,7 +107,7 @@ $string['total_ungraded'] = 'Total ungraded';
 $string['ungraded'] = 'ungraded';
 $string['view_activity_report'] = 'Activity report';
 $string['view_all_back'] = 'Back to Dashboard';
-$string['view_all_course_count'] = '{$a} course(s) with essays waiting';
+$string['view_all_course_count'] = 'Courses with essays waiting: {$a}';
 $string['view_all_courses'] = 'All courses ({$a})';
 $string['view_all_courses_title'] = 'Essays waiting for grading';
 $string['webcam_proctoring_report'] = 'Webcam proctoring report';

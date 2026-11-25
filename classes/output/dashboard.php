@@ -163,20 +163,21 @@ class dashboard {
         $oldest = (int)($quiz['oldest_ungraded'] ?? 0);
         if ($oldest <= 0) {
             return ['tone' => 'success', 'icon' => 'fa-circle-check',
-                'label' => get_string('status_ontime', 'block_aigrader_dashboard')];
+                'label' => get_string('status_ontime', 'block_aigrader_dashboard'), 'waited' => ''];
         }
         $waited = max(0, time() - $oldest);
-        $age = format_time($waited);
+        // Whole minutes are enough to judge urgency; seconds only add noise.
+        $age = get_string('status_waiting', 'block_aigrader_dashboard', format_time(max(60, $waited - $waited % 60)));
         if (!empty($quiz['is_overdue'])) {
             return ['tone' => 'danger', 'icon' => 'fa-circle-exclamation',
-                'label' => get_string('status_overdue', 'block_aigrader_dashboard', $age)];
+                'label' => get_string('status_overdue', 'block_aigrader_dashboard'), 'waited' => $age];
         }
         if ($thresholdseconds > 0 && $waited >= $thresholdseconds / 2) {
             return ['tone' => 'warning', 'icon' => 'fa-hourglass-half',
-                'label' => get_string('status_duesoon', 'block_aigrader_dashboard', $age)];
+                'label' => get_string('status_duesoon', 'block_aigrader_dashboard'), 'waited' => $age];
         }
         return ['tone' => 'success', 'icon' => 'fa-circle-check',
-            'label' => get_string('status_ontime', 'block_aigrader_dashboard')];
+            'label' => get_string('status_ontime', 'block_aigrader_dashboard'), 'waited' => ''];
     }
 
     /**
@@ -228,22 +229,19 @@ class dashboard {
             $html .= html_writer::tag('td', $row['ungraded'], ['class' => 'agd-num agd-count']);
             $html .= html_writer::tag(
                 'td',
-                html_writer::span(
-                    '<i class="fa-solid ' . $s['icon'] . '" aria-hidden="true"></i> ' . s($s['label']),
-                    'mds-badge badge mds-badge--subtle mds-badge--' . $s['tone']
-                ),
+                self::badge($s['label'], $s['tone'], $s['icon'])
+                    . ($s['waited'] !== '' ? html_writer::span(s($s['waited']), 'agd-waited') : ''),
                 ['class' => 'agd-status']
             );
             $html .= html_writer::tag(
                 'td',
-                html_writer::link(
+                self::link(
                     $row['link'],
-                    '<i class="fa-solid fa-wand-magic-sparkles" aria-hidden="true"></i> '
-                        . get_string('grade_now', 'block_aigrader_dashboard'),
-                    [
-                        'class' => 'mds-btn btn btn-primary mds-btn--size-sm agd-grade',
-                        'aria-label' => get_string('grade_now_quiz', 'block_aigrader_dashboard', $quizname),
-                    ]
+                    get_string('grade_now', 'block_aigrader_dashboard'),
+                    'fa-arrow-right',
+                    'agd-grade',
+                    get_string('grade_now_quiz', 'block_aigrader_dashboard', $quizname),
+                    true
                 ),
                 ['class' => 'agd-action']
             );
@@ -257,10 +255,7 @@ class dashboard {
         $html .= html_writer::tag(
             'td',
             $overdue > 0
-                ? html_writer::span(
-                    get_string('total_overdue', 'block_aigrader_dashboard', $overdue),
-                    'mds-badge badge mds-badge--subtle mds-badge--danger'
-                )
+                ? self::badge(get_string('total_overdue', 'block_aigrader_dashboard', $overdue), 'danger')
                 : '',
             ['colspan' => 2, 'class' => 'agd-status']
         );
@@ -279,23 +274,22 @@ class dashboard {
     protected static function footer(bool $fullpage, int $totalcourses): string {
         $links = '';
         if (!$fullpage && $totalcourses > 0) {
-            $links .= html_writer::link(
+            $links .= self::link(
                 new moodle_url('/blocks/aigrader_dashboard/viewall.php'),
-                '<i class="fa-solid fa-list" aria-hidden="true"></i> '
-                    . get_string('view_all_courses', 'block_aigrader_dashboard', $totalcourses),
-                ['class' => 'mds-btn btn btn-secondary mds-btn--size-sm']
+                get_string('view_all_courses', 'block_aigrader_dashboard', $totalcourses),
+                'fa-list'
             );
         }
         if (is_siteadmin() && \core_component::get_component_directory('quiz_aigrader')) {
-            $links .= html_writer::link(
+            $links .= self::link(
                 new moodle_url('/mod/quiz/report/aigrader/grader_report.php'),
-                '<i class="fa-solid fa-chart-column" aria-hidden="true"></i> '
-                    . get_string('view_activity_report', 'block_aigrader_dashboard'),
-                ['class' => 'mds-btn btn btn-secondary mds-btn--size-sm']
+                get_string('view_activity_report', 'block_aigrader_dashboard'),
+                'fa-chart-column'
             );
         }
         $links .= self::proctoring_link();
-        return $links === '' ? '' : html_writer::div($links, 'agd-foot');
+        $html = self::oversight_note();
+        return $html . ($links === '' ? '' : html_writer::div($links, 'agd-foot'));
     }
 
     /**
@@ -312,16 +306,77 @@ class dashboard {
         $pending = (int)$DB->count_records_select('quizaccess_webcamproctor_attempts', "status IN ('pending', 'processing')");
         $badge = '';
         if ($flagged + $pending > 0) {
-            $badge = ' ' . html_writer::span(
+            $badge = self::badge(
                 get_string('proctoring_to_review', 'block_aigrader_dashboard', $flagged + $pending),
-                'mds-badge badge mds-badge--subtle mds-badge--' . ($flagged > 0 ? 'danger' : 'warning')
+                $flagged > 0 ? 'danger' : 'warning'
             );
         }
-        return html_writer::link(
-            new moodle_url('/mod/quiz/index.php'),
-            '<i class="fa-solid fa-video" aria-hidden="true"></i> '
-                . get_string('proctoring_reports', 'block_aigrader_dashboard') . $badge,
-            ['class' => 'mds-btn btn btn-secondary mds-btn--size-sm']
+        return html_writer::span(
+            self::link(
+                new moodle_url('/mod/quiz/index.php'),
+                get_string('proctoring_reports', 'block_aigrader_dashboard'),
+                'fa-video'
+            ) . $badge,
+            'agd-foot-item'
+        );
+    }
+
+    /**
+     * A Moodle Design System Badge: a short label, optionally with a start icon.
+     *
+     * @param string $label The label (plain text).
+     * @param string $tone primary, secondary, success, danger, warning or info.
+     * @param string $icon Optional Font Awesome icon class.
+     * @return string HTML
+     */
+    protected static function badge(string $label, string $tone, string $icon = ''): string {
+        $classes = 'mds-badge badge mds-badge--subtle mds-badge--' . $tone . ($icon ? ' mds-badge--has-icon' : '');
+        $iconhtml = $icon ? '<i class="fa-solid ' . $icon . '" aria-hidden="true"></i>' : '';
+        return html_writer::span($iconhtml . s($label), $classes);
+    }
+
+    /**
+     * A Moodle Design System Link, used for every navigation in the block.
+     *
+     * @param moodle_url|string $url Destination.
+     * @param string $label Visible label (plain text).
+     * @param string $icon Font Awesome icon class.
+     * @param string $class Extra class.
+     * @param string $arialabel Accessible name when the label alone is not specific.
+     * @param bool $iconend Put the icon after the label.
+     * @return string HTML
+     */
+    protected static function link(
+        $url,
+        string $label,
+        string $icon,
+        string $class = '',
+        string $arialabel = '',
+        bool $iconend = false
+    ): string {
+        $iconhtml = html_writer::span('<i class="fa-solid ' . $icon . '" aria-hidden="true"></i>', 'mds-link__icon');
+        $labelhtml = html_writer::span(s($label), 'mds-link__label');
+        $attrs = ['class' => trim('mds-link ' . $class)];
+        if ($arialabel !== '') {
+            $attrs['aria-label'] = $arialabel;
+        }
+        return html_writer::link($url, $iconend ? $labelhtml . $iconhtml : $iconhtml . $labelhtml, $attrs);
+    }
+
+    /**
+     * Reminds graders that AI suggestions are drafts until a person approves them
+     * (EU AI Act, Article 14: human oversight). Shown only when the AI Essay Grader is installed.
+     *
+     * @return string HTML
+     */
+    protected static function oversight_note(): string {
+        if (!\core_component::get_component_directory('quiz_aigrader')) {
+            return '';
+        }
+        return html_writer::div(
+            '<i class="fa-solid fa-user-check" aria-hidden="true"></i>'
+                . html_writer::span(get_string('oversight_note', 'block_aigrader_dashboard')),
+            'agd-oversight'
         );
     }
 }
