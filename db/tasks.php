@@ -15,10 +15,10 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Scheduled tasks for AI Grader Dashboard Block
+ * Scheduled tasks for AI Essay Grader dashboard block
  *
  * @package    block_aigrader_dashboard
- * @copyright  2024 AI Grader
+ * @copyright  2024 LMS Hosting Services
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

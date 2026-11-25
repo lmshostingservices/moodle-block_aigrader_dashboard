@@ -18,7 +18,7 @@
  * Scheduled task that refreshes the cached ungraded-essay figures.
  *
  * @package    block_aigrader_dashboard
- * @copyright  2026 AI Grader
+ * @copyright  2026 LMS Hosting Services
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -32,7 +32,7 @@ namespace block_aigrader_dashboard\task;
  * a page is loading.
  *
  * @package    block_aigrader_dashboard
- * @copyright  2026 AI Grader
+ * @copyright  2026 LMS Hosting Services
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class warm_cache extends \core\task\scheduled_task {
@@ -53,7 +53,7 @@ class warm_cache extends \core\task\scheduled_task {
         require_once($CFG->dirroot . '/blocks/aigrader_dashboard/locallib.php');
 
         if (aigrader_dashboard_cache_ttl() <= 0) {
-            mtrace('AI Grader Dashboard: caching is disabled, nothing to refresh.');
+            mtrace('AI Essay Grader dashboard: caching is disabled, nothing to refresh.');
             return;
         }
 
@@ -61,6 +61,6 @@ class warm_cache extends \core\task\scheduled_task {
         $rows = aigrader_dashboard_warm_cache();
         $elapsed = round(microtime(true) - $started, 2);
 
-        mtrace("AI Grader Dashboard: refreshed {$rows} course/quiz rows in {$elapsed}s.");
+        mtrace("AI Essay Grader dashboard: refreshed {$rows} course/quiz rows in {$elapsed}s.");
     }
 }

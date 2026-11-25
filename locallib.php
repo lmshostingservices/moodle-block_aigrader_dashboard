@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * AI Grader Dashboard Block — shared data-fetching functions.
+ * AI Essay Grader dashboard block — shared data-fetching functions.
  *
  * Extracted here so that viewall.php can fetch dashboard data WITHOUT needing
  * to load block_aigrader_dashboard.php (which extends block_base). Loading a
@@ -29,17 +29,13 @@
  *  - viewall.php  (calls aigrader_dashboard_fetch_all_data() directly)
  *
  * @package    block_aigrader_dashboard
- * @copyright  2026 AI Grader
+ * @copyright  2026 LMS Hosting Services
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
-
-/**
- * Seconds a cached ungraded-essay result is reused for when the site has not set its own
- * value. Comfortably longer than the five-minute refresh task, so the figures a page sees
- * are kept current by cron rather than by making somebody wait for the query.
- */
+// Seconds a cached ungraded-essay result is reused for when the site has not set its own
+// value. Comfortably longer than the five-minute refresh task, so the figures a page sees
+// are kept current by cron rather than by making somebody wait for the query.
 if (!defined('BLOCK_AIGRADER_DASHBOARD_DEFAULT_CACHE_TTL')) {
     define('BLOCK_AIGRADER_DASHBOARD_DEFAULT_CACHE_TTL', 900);
 }
@@ -166,7 +162,7 @@ function aigrader_dashboard_nonblank_answer_sql($db): string {
     ];
     $blanklist = implode(', ', $blank);
 
-    // "The latest answer-bearing step is not blank", expressed as a pair of EXISTS
+    // The latest answer-bearing step is not blank, expressed as a pair of EXISTS
     // clauses. This was a MAX(sequencenumber) subquery correlated on qa.id, which the
     // database had to evaluate once per candidate row over the same two large tables.
     // NOT EXISTS asks the same question - is there a later step carrying answer data -
@@ -312,9 +308,11 @@ function aigrader_dashboard_query_ungraded_rows(): array {
                 continue;
             }
             $merged[$key]->ungraded_count += $row->ungraded_count;
-            if ($row->oldest_ungraded !== null
+            if (
+                $row->oldest_ungraded !== null
                     && ($merged[$key]->oldest_ungraded === null
-                        || $row->oldest_ungraded < $merged[$key]->oldest_ungraded)) {
+                        || $row->oldest_ungraded < $merged[$key]->oldest_ungraded)
+            ) {
                 $merged[$key]->oldest_ungraded = $row->oldest_ungraded;
             }
         }

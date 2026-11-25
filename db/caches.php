@@ -15,10 +15,10 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Cache definitions for the AI Grader Dashboard block.
+ * Cache definitions for the AI Essay Grader dashboard block.
  *
  * @package    block_aigrader_dashboard
- * @copyright  2026 AI Grader
+ * @copyright  2026 LMS Hosting Services
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

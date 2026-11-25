@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version information for AI Grader Dashboard Block.
+ * Version information for AI Essay Grader dashboard block.
  *
  * v2.1.4 - FIX: "Invalid get_string() identifier: 'grade_now'" debugging notice on every
  *          page that renders the block (and on viewall.php). The 'grade_now' key was used
@@ -50,16 +50,16 @@
  *          runaway IN() queries on large installations.
  *
  * @package    block_aigrader_dashboard
- * @copyright  2025 Essay Grader AI
+ * @copyright  2025 LMS Hosting Services
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'block_aigrader_dashboard';
-$plugin->version   = 2026102400;
-$plugin->requires  = 2022041900;
-$plugin->supported  = [400, 500];  // Moodle 4.0 to 5.x.
+$plugin->version   = 2026112500;
+$plugin->requires  = 2024042200;
+$plugin->supported = [404, 503];
 $plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = '2.4.0';
-$plugin->release_prev = '2.3.1';
+$plugin->release   = '2.5.0';
+$plugin->release_prev = '2.4.0';

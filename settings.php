@@ -15,16 +15,16 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Settings for AI Grader Dashboard Block
+ * Settings for AI Essay Grader dashboard block
  *
  * @package    block_aigrader_dashboard
- * @copyright  2024 AI Grader
+ * @copyright  2024 LMS Hosting Services
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-// locallib.php is a plain function library rather than an autoloaded class, so it has to
+// The locallib.php file is a plain function library rather than an autoloaded class, so it has to
 // be included before the default cache lifetime constant can be referenced below.
 require_once($CFG->dirroot . '/blocks/aigrader_dashboard/locallib.php');
 

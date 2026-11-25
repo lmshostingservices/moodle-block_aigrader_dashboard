@@ -18,7 +18,7 @@
  * Privacy Subsystem implementation for block_aigrader_dashboard.
  *
  * @package    block_aigrader_dashboard
- * @copyright  2024 AI Grader
+ * @copyright  2024 LMS Hosting Services
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

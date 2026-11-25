@@ -1,704 +1,347 @@
 /* =====================================================================
- * AI Grader Dashboard block.
+ * AI Essay Grader dashboard block (2.5.0)
  *
- * Everything is scoped under .block_aigrader_dashboard .agd (and .agd-page for
- * the standalone View all page), so nothing here can reach the rest of Moodle.
- * The design tokens are declared on that root rather than on :root for the same
- * reason - a theme or another plugin is never affected by them.
- *
- * Colour carries meaning here, never decoration: blue is action, green is on
- * time, amber needs attention, red is overdue, slate is neutral. Every tone is
- * also spelled out in words next to it, so the table is still readable without
- * colour vision.
- * ===================================================================== */
+ * Moodle Design System components (buttons, badges, alerts) and tokens, with the
+ * LMS Labs premium finish. Everything is scoped to the block and its full page, so
+ * nothing here reaches the rest of Moodle. Each token falls back to its MDS value,
+ * so the block looks the same on Moodle 4.4 to 5.2, which do not ship MDS tokens.
+ * Dark mode follows the theme (data-bs-theme="dark").
+ * ================================================================== */
 
-.block_aigrader_dashboard .agd,
-.agd-page {
-    --ag-primary: #2563eb;
-    --ag-success: #16a34a;
-    --ag-warning: #d97706;
-    --ag-danger: #dc2626;
-    --ag-neutral: #64748b;
-    --ag-indigo: #4f46e5;
-    --ag-teal: #0d9488;
-
-    --ag-text: #1d2129;
-    --ag-muted: #626c7a;
-    --ag-border: #dee2e8;
-    --ag-input-border: #cbd5e1;
-    --ag-subtle-bg: #f8f9fb;
-    --ag-track: #e2e8f0;
-    --ag-row-highlight: #eff6ff;
-
-    --ag-radius-card: 14px;
-    --ag-radius-inner: 12px;
-    --ag-radius-btn: 8px;
-
-    font-family: Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
-    color: var(--ag-text);
+.block_aigrader_dashboard .agd {
+    --agd-ink: var(--mds-text-default, #1d2125);
+    --agd-ink-2: var(--mds-text-subtle, #3f464d);
+    --agd-muted: var(--mds-text-muted, #6a737b);
+    --agd-surface: var(--mds-bg-surface-default, #fff);
+    --agd-subtle: var(--mds-bg-surface-subtle, #f7f8fa);
+    --agd-border: var(--mds-border-default, #e1e4e8);
+    --agd-border-subtle: var(--mds-border-subtle, #eceef1);
+    --agd-primary: var(--mds-bg-interactive-primary-default, #0f6cbf);
+    --agd-link: var(--mds-text-link-primary-default, #0f6cbf);
+    --agd-primary-soft: var(--mds-bg-feedback-primary-light, #e7f0f9);
+    --agd-danger: var(--mds-text-feedback-danger, #a82a1c);
+    --agd-danger-soft: var(--mds-bg-feedback-danger-light, #fbebe9);
+    --agd-warning-soft: var(--mds-bg-feedback-warning-light, #fef7ed);
+    --agd-success: var(--mds-text-feedback-success, #2c6629);
+    --agd-radius: var(--mds-border-radius-lg, 12px);
+    --agd-radius-sm: var(--mds-border-radius-md, 8px);
+    --agd-shadow: 0 1px 2px rgba(16, 24, 40, 0.06), 0 1px 3px rgba(16, 24, 40, 0.08);
+    --agd-ring: 0 0 0 3px rgba(15, 108, 191, 0.22);
+    color: var(--agd-ink);
+    font-size: 0.9375rem;
 }
 
-/* ---------------------------------------------------------------------
- * Card head
- * ------------------------------------------------------------------- */
+[data-bs-theme="dark"] .block_aigrader_dashboard .agd {
+    --agd-ink: #e8eaed;
+    --agd-ink-2: #c4c9cf;
+    --agd-muted: #8f959e;
+    --agd-surface: #161a1f;
+    --agd-subtle: #1c2127;
+    --agd-border: #2c333a;
+    --agd-border-subtle: #22282e;
+    --agd-primary: #2d74b5;
+    --agd-link: #6fa7d9;
+    --agd-primary-soft: rgba(63, 137, 204, 0.16);
+    --agd-danger: #eaada6;
+    --agd-danger-soft: rgba(202, 49, 32, 0.16);
+    --agd-warning-soft: rgba(240, 173, 78, 0.14);
+    --agd-success: #aecaad;
+    --agd-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+    --agd-ring: 0 0 0 3px rgba(111, 167, 217, 0.3);
+}
 
-.block_aigrader_dashboard .agd-head,
-.agd-page .agd-head {
+/* Alert shown while the site has paused AI suggestions. */
+.block_aigrader_dashboard .agd-alert {
     display: flex;
     align-items: center;
-    gap: 10px;
-    margin-bottom: 18px;
-}
-
-.block_aigrader_dashboard .agd-title,
-.agd-page .agd-title {
-    margin: 0;
-    font-size: 22px;
-    font-weight: 700;
-    line-height: 1.2;
-    color: var(--ag-text);
-}
-
-.block_aigrader_dashboard .agd-i,
-.agd-page .agd-i {
-    flex: 0 0 auto;
-}
-
-.block_aigrader_dashboard .agd-i-primary,
-.agd-page .agd-i-primary {
-    color: var(--ag-primary);
-}
-
-.block_aigrader_dashboard .agd-i-success,
-.agd-page .agd-i-success {
-    color: var(--ag-success);
+    gap: 0.5rem;
+    margin: 0 0 1rem;
+    padding: 0.75rem 1rem;
+    border-radius: var(--agd-radius-sm);
+    font-size: 0.875rem;
 }
 
 /* ---------------------------------------------------------------------
- * Stat tiles
- *
- * A light wash of the meaning colour with a slightly stronger tinted border.
- * Solid colour is reserved for primary buttons, so the tiles stay calm even
- * when four of them sit side by side.
- * ------------------------------------------------------------------- */
+ * Headline figures
+ * ------------------------------------------------------------------ */
 
-.block_aigrader_dashboard .agd-tiles,
-.agd-page .agd-tiles {
+.block_aigrader_dashboard .agd-tiles {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 12px;
-    margin-bottom: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr));
+    gap: 0.75rem;
+    margin: 0 0 1rem;
+    padding: 0;
+    list-style: none;
 }
 
-.block_aigrader_dashboard .agd-tile,
-.agd-page .agd-tile {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    padding: 14px 16px;
-    border-radius: var(--ag-radius-inner);
-    border: 2px solid;
-    min-width: 0;
+.block_aigrader_dashboard .agd-tile {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-areas: "icon label" "icon value";
+    column-gap: 0.75rem;
+    align-items: center;
+    padding: 0.875rem 1rem;
+    background-color: var(--agd-surface);
+    border: 1px solid var(--agd-border);
+    border-radius: var(--agd-radius);
+    box-shadow: var(--agd-shadow);
 }
 
-.block_aigrader_dashboard .agd-tile-label,
-.agd-page .agd-tile-label {
-    font-size: 13px;
+.block_aigrader_dashboard .agd-tile-icon {
+    grid-area: icon;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: var(--agd-radius-sm);
+    background-color: var(--agd-subtle);
+    color: var(--agd-muted);
+    font-size: 1rem;
+}
+
+.block_aigrader_dashboard .agd-tile-label {
+    grid-area: label;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--agd-muted);
+}
+
+.block_aigrader_dashboard .agd-tile-value {
+    grid-area: value;
+    font-size: 1.625rem;
     font-weight: 600;
-    line-height: 1.3;
-    color: var(--ag-muted);
-}
-
-.block_aigrader_dashboard .agd-tile-value,
-.agd-page .agd-tile-value {
-    font-size: 34px;
-    font-weight: 700;
-    line-height: 1.1;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    color: var(--agd-ink);
     font-variant-numeric: tabular-nums;
 }
 
-.block_aigrader_dashboard .agd-tile-primary,
-.agd-page .agd-tile-primary {
-    background: color-mix(in srgb, var(--ag-primary) 7%, #fff);
-    border-color: color-mix(in srgb, var(--ag-primary) 30%, #fff);
+.block_aigrader_dashboard .agd-tile-primary .agd-tile-icon {
+    background-color: var(--agd-primary-soft);
+    color: var(--agd-link);
 }
 
-.block_aigrader_dashboard .agd-tile-primary .agd-tile-value,
-.agd-page .agd-tile-primary .agd-tile-value {
-    color: var(--ag-primary);
+.block_aigrader_dashboard .agd-tile-danger .agd-tile-icon {
+    background-color: var(--agd-danger-soft);
+    color: var(--agd-danger);
 }
 
-.block_aigrader_dashboard .agd-tile-danger,
-.agd-page .agd-tile-danger {
-    background: color-mix(in srgb, var(--ag-danger) 7%, #fff);
-    border-color: color-mix(in srgb, var(--ag-danger) 30%, #fff);
-}
-
-.block_aigrader_dashboard .agd-tile-danger .agd-tile-value,
-.agd-page .agd-tile-danger .agd-tile-value {
-    color: var(--ag-danger);
-}
-
-.block_aigrader_dashboard .agd-tile-indigo,
-.agd-page .agd-tile-indigo {
-    background: color-mix(in srgb, var(--ag-indigo) 7%, #fff);
-    border-color: color-mix(in srgb, var(--ag-indigo) 30%, #fff);
-}
-
-.block_aigrader_dashboard .agd-tile-indigo .agd-tile-value,
-.agd-page .agd-tile-indigo .agd-tile-value {
-    color: var(--ag-indigo);
-}
-
-.block_aigrader_dashboard .agd-tile-teal,
-.agd-page .agd-tile-teal {
-    background: color-mix(in srgb, var(--ag-teal) 7%, #fff);
-    border-color: color-mix(in srgb, var(--ag-teal) 30%, #fff);
-}
-
-.block_aigrader_dashboard .agd-tile-teal .agd-tile-value,
-.agd-page .agd-tile-teal .agd-tile-value {
-    color: var(--ag-teal);
-}
-
-/* Fallback for browsers without color-mix(). */
-@supports not (background: color-mix(in srgb, #000 7%, #fff)) {
-    .block_aigrader_dashboard .agd-tile-primary,
-    .agd-page .agd-tile-primary { background: #eff6ff; border-color: #bfd4fb; }
-    .block_aigrader_dashboard .agd-tile-danger,
-    .agd-page .agd-tile-danger { background: #fef2f2; border-color: #f4bcbc; }
-    .block_aigrader_dashboard .agd-tile-indigo,
-    .agd-page .agd-tile-indigo { background: #f1f1fd; border-color: #c9c7f7; }
-    .block_aigrader_dashboard .agd-tile-teal,
-    .agd-page .agd-tile-teal { background: #eef8f7; border-color: #b6dedb; }
+.block_aigrader_dashboard .agd-tile-danger .agd-tile-value {
+    color: var(--agd-danger);
 }
 
 /* ---------------------------------------------------------------------
  * Queue table
- * ------------------------------------------------------------------- */
+ * ------------------------------------------------------------------ */
 
-.block_aigrader_dashboard .agd-tablewrap,
-.agd-page .agd-tablewrap {
-    border: 1px solid var(--ag-border);
-    border-radius: 10px;
+.block_aigrader_dashboard .agd-tablewrap {
     overflow-x: auto;
+    background-color: var(--agd-surface);
+    border: 1px solid var(--agd-border);
+    border-radius: var(--agd-radius);
+    box-shadow: var(--agd-shadow);
 }
 
-.block_aigrader_dashboard .agd-table,
-.agd-page .agd-table {
+.block_aigrader_dashboard .agd-table {
     width: 100%;
     margin: 0;
     border-collapse: collapse;
-    font-size: 14px;
+    color: var(--agd-ink);
 }
 
 .block_aigrader_dashboard .agd-table th,
-.agd-page .agd-table th {
-    padding: 10px 14px;
+.block_aigrader_dashboard .agd-table td {
+    padding: 0.75rem 1rem;
+    border: 0;
+    border-bottom: 1px solid var(--agd-border-subtle);
+    background-color: transparent;
     text-align: left;
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--ag-muted);
-    background: var(--ag-subtle-bg);
-    border-bottom: 1px solid var(--ag-border);
-    white-space: nowrap;
-}
-
-.block_aigrader_dashboard .agd-table td,
-.agd-page .agd-table td {
-    padding: 12px 14px;
-    border-bottom: 1px solid var(--ag-border);
     vertical-align: middle;
 }
 
-.block_aigrader_dashboard .agd-table tbody tr:last-child td,
-.agd-page .agd-table tbody tr:last-child td {
-    border-bottom: 0;
-}
-
-.block_aigrader_dashboard .agd-num,
-.agd-page .agd-num {
-    text-align: right;
-    font-variant-numeric: tabular-nums;
-    white-space: nowrap;
-}
-
-.block_aigrader_dashboard .agd-course,
-.agd-page .agd-course {
-    font-weight: 500;
-    color: var(--ag-text);
-}
-
-.block_aigrader_dashboard .agd-quiz,
-.agd-page .agd-quiz {
-    color: var(--ag-muted);
-}
-
-.block_aigrader_dashboard .agd-count,
-.agd-page .agd-count {
-    font-weight: 700;
-}
-
-.block_aigrader_dashboard .agd-count-danger,
-.agd-page .agd-count-danger {
-    color: var(--ag-danger);
-}
-
-.block_aigrader_dashboard .agd-count-primary,
-.agd-page .agd-count-primary {
-    color: var(--ag-primary);
-}
-
-.block_aigrader_dashboard .agd-actioncell,
-.agd-page .agd-actioncell {
-    text-align: right;
-    white-space: nowrap;
-}
-
-/* Row status: a solid stripe on the left edge plus a wash across the row. The
-   stripe is drawn with a border so it survives horizontal scrolling. */
-
-.block_aigrader_dashboard .agd-row td:first-child,
-.agd-page .agd-row td:first-child {
-    border-left: 6px solid transparent;
-}
-
-.block_aigrader_dashboard .agd-row-danger td:first-child,
-.agd-page .agd-row-danger td:first-child { border-left-color: var(--ag-danger); }
-
-.block_aigrader_dashboard .agd-row-warning td:first-child,
-.agd-page .agd-row-warning td:first-child { border-left-color: var(--ag-warning); }
-
-.block_aigrader_dashboard .agd-row-success td:first-child,
-.agd-page .agd-row-success td:first-child { border-left-color: var(--ag-success); }
-
-.block_aigrader_dashboard .agd-row-neutral td:first-child,
-.agd-page .agd-row-neutral td:first-child { border-left-color: var(--ag-neutral); }
-
-.block_aigrader_dashboard .agd-row-danger td,
-.agd-page .agd-row-danger td {
-    background: color-mix(in srgb, var(--ag-danger) 6%, #fff);
-}
-
-.block_aigrader_dashboard .agd-row-warning td,
-.agd-page .agd-row-warning td {
-    background: color-mix(in srgb, var(--ag-warning) 6%, #fff);
-}
-
-.block_aigrader_dashboard .agd-table tbody tr:hover td,
-.agd-page .agd-table tbody tr:hover td {
-    background: var(--ag-row-highlight);
-}
-
-.block_aigrader_dashboard .agd-total td,
-.agd-page .agd-total td {
-    background: var(--ag-subtle-bg);
-    border-top: 1px solid var(--ag-border);
-    border-bottom: 0;
-    font-weight: 700;
-    padding: 12px 14px;
-}
-
-/* ---------------------------------------------------------------------
- * Badges - always carrying their own text, never colour alone
- * ------------------------------------------------------------------- */
-
-.block_aigrader_dashboard .agd-badge,
-.agd-page .agd-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    padding: 3px 10px;
-    border-radius: 999px;
-    border: 2px solid;
-    font-size: 12px;
-    font-weight: 700;
-    line-height: 1.5;
-    white-space: nowrap;
-}
-
-.block_aigrader_dashboard .agd-badge-danger,
-.agd-page .agd-badge-danger {
-    color: var(--ag-danger);
-    background: color-mix(in srgb, var(--ag-danger) 12%, #fff);
-    border-color: color-mix(in srgb, var(--ag-danger) 45%, #fff);
-}
-
-.block_aigrader_dashboard .agd-badge-warning,
-.agd-page .agd-badge-warning {
-    color: var(--ag-warning);
-    background: color-mix(in srgb, var(--ag-warning) 12%, #fff);
-    border-color: color-mix(in srgb, var(--ag-warning) 45%, #fff);
-}
-
-.block_aigrader_dashboard .agd-badge-success,
-.agd-page .agd-badge-success {
-    color: var(--ag-success);
-    background: color-mix(in srgb, var(--ag-success) 12%, #fff);
-    border-color: color-mix(in srgb, var(--ag-success) 45%, #fff);
-}
-
-.block_aigrader_dashboard .agd-badge-neutral,
-.agd-page .agd-badge-neutral {
-    color: var(--ag-neutral);
-    background: color-mix(in srgb, var(--ag-neutral) 12%, #fff);
-    border-color: color-mix(in srgb, var(--ag-neutral) 45%, #fff);
-}
-
-@supports not (background: color-mix(in srgb, #000 7%, #fff)) {
-    .block_aigrader_dashboard .agd-badge-danger,
-    .agd-page .agd-badge-danger { background: #fdeaea; border-color: #f0a8a8; }
-    .block_aigrader_dashboard .agd-badge-warning,
-    .agd-page .agd-badge-warning { background: #fdf2e3; border-color: #efc489; }
-    .block_aigrader_dashboard .agd-badge-success,
-    .agd-page .agd-badge-success { background: #e7f6ec; border-color: #9bd7ae; }
-    .block_aigrader_dashboard .agd-badge-neutral,
-    .agd-page .agd-badge-neutral { background: #eef0f3; border-color: #b4bcc7; }
-    .block_aigrader_dashboard .agd-row-danger td,
-    .agd-page .agd-row-danger td { background: #fef5f5; }
-    .block_aigrader_dashboard .agd-row-warning td,
-    .agd-page .agd-row-warning td { background: #fdf8f0; }
-}
-
-/* ---------------------------------------------------------------------
- * Buttons
- * ------------------------------------------------------------------- */
-
-.block_aigrader_dashboard .agd-btn,
-.agd-page .agd-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 7px;
-    height: 36px;
-    padding: 0 14px;
-    border-radius: var(--ag-radius-btn);
-    border: 2px solid transparent;
-    font-size: 13px;
+.block_aigrader_dashboard .agd-table thead th {
+    padding-top: 0.625rem;
+    padding-bottom: 0.625rem;
+    background-color: var(--agd-subtle);
+    border-bottom-color: var(--agd-border);
+    font-size: 0.75rem;
     font-weight: 600;
-    line-height: 1;
-    text-decoration: none;
-    cursor: pointer;
-    transition: background-color .12s ease, border-color .12s ease, color .12s ease;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: var(--agd-muted);
 }
 
-.block_aigrader_dashboard .agd-btn:focus-visible,
-.agd-page .agd-btn:focus-visible {
-    outline: 2px solid var(--ag-primary);
-    outline-offset: 2px;
+.block_aigrader_dashboard .agd-table tbody tr:hover > * {
+    background-color: var(--agd-subtle);
 }
 
-.block_aigrader_dashboard .agd-btn-primary,
-.agd-page .agd-btn-primary {
-    background: var(--ag-primary);
-    color: #fff;
+.block_aigrader_dashboard .agd-table tbody th {
+    font-weight: 400;
 }
 
-.block_aigrader_dashboard .agd-btn-primary:hover,
-.block_aigrader_dashboard .agd-btn-primary:focus,
-.agd-page .agd-btn-primary:hover,
-.agd-page .agd-btn-primary:focus {
-    background: #1d4ed8;
-    color: #fff;
-    text-decoration: none;
-}
-
-.block_aigrader_dashboard .agd-btn-secondary,
-.agd-page .agd-btn-secondary {
-    background: #fff;
-    color: var(--ag-primary);
-    border-color: color-mix(in srgb, var(--ag-primary) 35%, #fff);
-}
-
-.block_aigrader_dashboard .agd-btn-secondary:hover,
-.block_aigrader_dashboard .agd-btn-secondary:focus,
-.agd-page .agd-btn-secondary:hover,
-.agd-page .agd-btn-secondary:focus {
-    background: var(--ag-row-highlight);
-    color: var(--ag-primary);
-    text-decoration: none;
-}
-
-@supports not (border-color: color-mix(in srgb, #000 7%, #fff)) {
-    .block_aigrader_dashboard .agd-btn-secondary,
-    .agd-page .agd-btn-secondary { border-color: #a8c4f6; }
-}
-
-/* ---------------------------------------------------------------------
- * Empty state, overflow warning, footer
- * ------------------------------------------------------------------- */
-
-.block_aigrader_dashboard .agd-empty,
-.agd-page .agd-empty {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 22px;
-    border: 1px solid var(--ag-border);
-    border-radius: var(--ag-radius-inner);
-    background: var(--ag-subtle-bg);
-    color: var(--ag-muted);
-    font-size: 14px;
-}
-
-.block_aigrader_dashboard .agd-warn,
-.agd-page .agd-warn {
-    display: flex;
-    align-items: flex-start;
-    gap: 8px;
-    margin-top: 14px;
-    padding: 10px 14px;
-    border-radius: 10px;
-    font-size: 13px;
-    line-height: 1.5;
-    color: var(--ag-warning);
-    background: color-mix(in srgb, var(--ag-warning) 10%, #fff);
-    border: 2px solid color-mix(in srgb, var(--ag-warning) 40%, #fff);
-}
-
-.block_aigrader_dashboard .agd-foot,
-.agd-page .agd-foot {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-top: 16px;
-}
-
-/* The proctoring quicklink is rendered by a separate method; pull its wrapper
-   into the footer row rather than letting it stack underneath. */
-.block_aigrader_dashboard .agd-foot .agd-report-link,
-.agd-page .agd-foot .agd-report-link {
-    margin: 0;
-}
-
-/* ---------------------------------------------------------------------
- * Responsive
- * ------------------------------------------------------------------- */
-
-@media (max-width: 900px) {
-    .block_aigrader_dashboard .agd-tiles,
-    .agd-page .agd-tiles {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .block_aigrader_dashboard .agd-tile-value,
-    .agd-page .agd-tile-value {
-        font-size: 28px;
-    }
-}
-
-@media (max-width: 480px) {
-    .block_aigrader_dashboard .agd-tiles,
-    .agd-page .agd-tiles {
-        grid-template-columns: 1fr;
-    }
-}
-
-/* Blocks are narrow; drop the quiz column rather than squeezing everything. */
-@media (max-width: 700px) {
-    .block_aigrader_dashboard .agd-table .agd-quiz,
-    .block_aigrader_dashboard .agd-table th:nth-child(2) {
-        display: none;
-    }
-}
-
-/* ---------------------------------------------------------------------
- * Dark mode, where the theme asks for it
- * ------------------------------------------------------------------- */
-
-@media (prefers-color-scheme: dark) {
-    body.theme-dark .block_aigrader_dashboard .agd,
-    body.theme-dark .agd-page {
-        --ag-text: #e8eaed;
-        --ag-muted: #a0a8b4;
-        --ag-border: #343a44;
-        --ag-subtle-bg: #1e232b;
-        --ag-track: #343a44;
-        --ag-row-highlight: #1b2535;
-    }
-}
-
-/* =====================================================================
- * View all courses page (viewall.php)
- *
- * Same tokens, same vocabulary - a page-width version of the block's queue.
- * ===================================================================== */
-
-.agd-page .agd-viewall-back {
-    margin-bottom: 14px;
-}
-
-.agd-page .agd-back-link {
-    font-size: 14px;
+.block_aigrader_dashboard .agd-quiz {
+    display: block;
     font-weight: 600;
-    color: var(--ag-primary);
+    color: var(--agd-ink);
+}
+
+.block_aigrader_dashboard .agd a.agd-course {
+    display: block;
+    margin-top: 0.125rem;
+    font-size: 0.8125rem;
+    color: var(--agd-muted);
     text-decoration: none;
 }
 
-.agd-page .agd-back-link:hover {
+.block_aigrader_dashboard .agd a.agd-course:hover,
+.block_aigrader_dashboard .agd a.agd-course:focus {
+    color: var(--agd-link);
     text-decoration: underline;
 }
 
-.agd-page .agd-viewall-header {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 12px;
-    margin-bottom: 6px;
-}
-
-.agd-page .agd-viewall-header h2 {
-    margin: 0;
-    font-size: 24px;
-    font-weight: 700;
-    color: var(--ag-text);
-}
-
-.agd-page .agd-viewall-stats {
-    display: flex;
-    gap: 8px;
-}
-
-.agd-page .agd-stat-pill {
-    display: inline-flex;
-    align-items: center;
-    padding: 4px 12px;
-    border-radius: 999px;
-    border: 2px solid;
-    font-size: 13px;
-    font-weight: 700;
+.block_aigrader_dashboard .agd-num {
+    text-align: right;
     white-space: nowrap;
 }
 
-.agd-page .agd-stat-pill.agd-stat-warning {
-    color: var(--ag-warning);
-    background: color-mix(in srgb, var(--ag-warning) 12%, #fff);
-    border-color: color-mix(in srgb, var(--ag-warning) 45%, #fff);
-}
-
-.agd-page .agd-stat-pill.agd-stat-danger {
-    color: var(--ag-danger);
-    background: color-mix(in srgb, var(--ag-danger) 12%, #fff);
-    border-color: color-mix(in srgb, var(--ag-danger) 45%, #fff);
-}
-
-.agd-page .agd-viewall-count {
-    margin-bottom: 20px;
-    font-size: 14px;
-    color: var(--ag-muted);
-}
-
-.agd-page .agd-viewall-courses {
-    display: flex;
-    flex-direction: column;
-    gap: 18px;
-}
-
-.agd-page .agd-viewall-course {
-    border: 1px solid var(--ag-border);
-    border-radius: var(--ag-radius-card);
-    overflow: hidden;
-    background: #fff;
-}
-
-.agd-page .agd-viewall-course-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    padding: 14px 18px;
-    background: var(--ag-subtle-bg);
-    border-bottom: 1px solid var(--ag-border);
-}
-
-.agd-page .agd-viewall-course-name {
-    font-size: 16px;
-    font-weight: 700;
-    color: var(--ag-text);
-}
-
-.agd-page .agd-viewall-table {
-    width: 100%;
-    margin: 0;
-    border-collapse: collapse;
-    font-size: 14px;
-}
-
-.agd-page .agd-viewall-table th {
-    padding: 10px 18px;
-    text-align: left;
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--ag-muted);
-    border-bottom: 1px solid var(--ag-border);
-    white-space: nowrap;
-}
-
-.agd-page .agd-viewall-table td {
-    padding: 12px 18px;
-    border-bottom: 1px solid var(--ag-border);
-    vertical-align: middle;
-}
-
-.agd-page .agd-viewall-table tr:last-child td {
-    border-bottom: 0;
-}
-
-.agd-page .agd-viewall-th-count,
-.agd-page .agd-viewall-th-overdue,
-.agd-page .agd-viewall-th-action {
-    text-align: right;
-}
-
-.agd-page .agd-viewall-table td:nth-child(2) {
-    text-align: right;
-    font-weight: 700;
+.block_aigrader_dashboard .agd-table .agd-count {
+    font-size: 1rem;
+    font-weight: 600;
     font-variant-numeric: tabular-nums;
 }
 
-.agd-page .agd-viewall-row-overdue td {
-    background: color-mix(in srgb, var(--ag-danger) 6%, #fff);
+.block_aigrader_dashboard .agd-row-danger .agd-count {
+    color: var(--agd-danger);
 }
 
-.agd-page .agd-viewall-row-overdue td:first-child {
-    border-left: 6px solid var(--ag-danger);
+.block_aigrader_dashboard .agd-status .mds-badge {
+    white-space: nowrap;
 }
 
-.agd-page .agd-viewall-empty {
-    padding: 22px;
-    border: 1px solid var(--ag-border);
-    border-radius: var(--ag-radius-inner);
-    background: var(--ag-subtle-bg);
-    color: var(--ag-muted);
+.block_aigrader_dashboard .agd-status .mds-badge i {
+    margin-right: 0.125rem;
 }
 
-.agd-page .agd-btn-sm {
-    height: 32px;
-    padding: 0 12px;
-    font-size: 12px;
+.block_aigrader_dashboard .agd-action {
+    width: 1%;
+    text-align: right;
+    white-space: nowrap;
 }
 
-@supports not (background: color-mix(in srgb, #000 7%, #fff)) {
-    .agd-page .agd-stat-pill.agd-stat-warning { background: #fdf2e3; border-color: #efc489; }
-    .agd-page .agd-stat-pill.agd-stat-danger { background: #fdeaea; border-color: #f0a8a8; }
-    .agd-page .agd-viewall-row-overdue td { background: #fef5f5; }
+.block_aigrader_dashboard .agd-table tfoot th,
+.block_aigrader_dashboard .agd-table tfoot td {
+    border-bottom: 0;
+    background-color: var(--agd-subtle);
+    font-weight: 600;
 }
 
-/* Icons emitted by render_proctoring_quicklink(), which keeps its own markup. */
-.block_aigrader_dashboard .agd-icon,
-.agd-page .agd-icon {
-    flex: 0 0 auto;
-    vertical-align: middle;
+/* ---------------------------------------------------------------------
+ * Buttons, empty state, notes, footer
+ * ------------------------------------------------------------------ */
+
+.block_aigrader_dashboard .agd .mds-btn.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    border-radius: var(--agd-radius-sm);
+    font-weight: 500;
 }
 
-.block_aigrader_dashboard .agd-icon-sm,
-.agd-page .agd-icon-sm {
-    width: 16px;
-    height: 16px;
+.block_aigrader_dashboard .agd .mds-btn.btn-primary {
+    background-color: var(--agd-primary);
+    border-color: var(--agd-primary);
+    color: #fff;
 }
 
-.block_aigrader_dashboard .agd-icon-xs,
-.agd-page .agd-icon-xs {
-    width: 12px;
-    height: 12px;
+.block_aigrader_dashboard .agd .mds-btn.btn-secondary {
+    background-color: var(--agd-surface);
+    border: 1px solid var(--agd-border);
+    color: var(--agd-ink);
+    box-shadow: 0 1px 2px rgba(16, 24, 40, 0.06);
+}
+
+.block_aigrader_dashboard .agd .mds-btn.btn-secondary:hover {
+    background-color: var(--agd-subtle);
+}
+
+.block_aigrader_dashboard .agd .mds-btn.btn:focus-visible,
+.block_aigrader_dashboard .agd-course:focus-visible {
+    outline: 2px solid var(--agd-link);
+    outline-offset: 2px;
+    box-shadow: var(--agd-ring);
+}
+
+.block_aigrader_dashboard .agd-empty,
+.block_aigrader_dashboard .agd-note {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.875rem 1rem;
+    border-radius: var(--agd-radius-sm);
+    font-size: 0.875rem;
+}
+
+.block_aigrader_dashboard .agd-empty {
+    background-color: var(--agd-subtle);
+    border: 1px solid var(--agd-border);
+    color: var(--agd-ink-2);
+}
+
+.block_aigrader_dashboard .agd-empty i {
+    color: var(--agd-success);
+}
+
+.block_aigrader_dashboard .agd-note {
+    margin-top: 0.75rem;
+    background-color: var(--agd-warning-soft);
+    color: var(--agd-ink-2);
+}
+
+.block_aigrader_dashboard .agd-foot {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+/* MDS subtle badges, drawn here so they look the same before Moodle 5.3 ships MDS. */
+.block_aigrader_dashboard .agd .mds-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem 0.5rem;
+    border: 1px solid transparent;
+    border-radius: var(--mds-border-radius-sm, 6px);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    line-height: 1.3;
+}
+
+.block_aigrader_dashboard .agd .mds-badge--danger {
+    background-color: var(--agd-danger-soft);
+    border-color: var(--mds-border-feedback-danger, #f1c3bd);
+    color: var(--agd-danger);
+}
+
+.block_aigrader_dashboard .agd .mds-badge--warning {
+    background-color: var(--agd-warning-soft);
+    border-color: var(--mds-border-feedback-warning, #f6d9ab);
+    color: var(--mds-text-feedback-warning, #7a4d0b);
+}
+
+.block_aigrader_dashboard .agd .mds-badge--success {
+    background-color: var(--mds-bg-feedback-success-light, #eef6ee);
+    border-color: var(--mds-border-feedback-success, #c2dcc1);
+    color: var(--agd-success);
+}
+
+[data-bs-theme="dark"] .block_aigrader_dashboard .agd .mds-badge--warning {
+    color: #f6ce95;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .block_aigrader_dashboard .agd * {
+        transition: none;
+    }
 }

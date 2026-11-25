@@ -18,7 +18,7 @@
  * Scheduled task to send notification emails for ungraded essays
  *
  * @package    block_aigrader_dashboard
- * @copyright  2024 AI Grader
+ * @copyright  2024 LMS Hosting Services
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -43,7 +43,7 @@ class send_notifications extends \core\task\scheduled_task {
 
         $email = get_config('block_aigrader_dashboard', 'notification_email');
         if (empty($email)) {
-            mtrace('AI Grader Dashboard: No notification email configured, skipping.');
+            mtrace('AI Essay Grader dashboard: No notification email configured, skipping.');
             return;
         }
 
@@ -83,7 +83,7 @@ class send_notifications extends \core\task\scheduled_task {
         $ungradeddata = $this->get_ungraded_essays();
 
         if (empty($ungradeddata['courses'])) {
-            mtrace('AI Grader Dashboard: No ungraded essays found.');
+            mtrace('AI Essay Grader dashboard: no essays waiting.');
             return;
         }
 
@@ -96,9 +96,10 @@ class send_notifications extends \core\task\scheduled_task {
         foreach ($ungradeddata['courses'] as $course) {
             foreach ($course['quizzes'] as $quiz) {
                 if ($quiz['ungraded'] > 0) {
+                    // Plain text for the email: multilang and filters applied, nothing escaped.
                     $item = [
-                        'course' => $course['name'],
-                        'quiz' => $quiz['name'],
+                        'course' => format_string($course['name'], true, ['escape' => false]),
+                        'quiz' => format_string($quiz['name'], true, ['escape' => false]),
                         'count' => $quiz['ungraded'],
                         'link' => $quiz['link'],
                     ];
@@ -121,8 +122,7 @@ class send_notifications extends \core\task\scheduled_task {
         if ($notifynew && $hasnew && !empty($newitems)) {
             $messageparts[] = get_string('email_new_intro', 'block_aigrader_dashboard');
             foreach ($newitems as $item) {
-                $messageparts[] = "  • {$item['course']} > {$item['quiz']}: {$item['count']} " .
-                    ($item['count'] == 1 ? 'essay' : 'essays');
+                $messageparts[] = '  - ' . get_string('email_item', 'block_aigrader_dashboard', (object)$item);
             }
             $messageparts[] = '';
         }
@@ -130,14 +130,13 @@ class send_notifications extends \core\task\scheduled_task {
         if ($notifyoverdue && $hasoverdue && !empty($overdueitems)) {
             $messageparts[] = get_string('email_overdue_intro', 'block_aigrader_dashboard');
             foreach ($overdueitems as $item) {
-                $messageparts[] = "  ⚠️ {$item['course']} > {$item['quiz']}: {$item['count']} " .
-                    ($item['count'] == 1 ? 'essay' : 'essays') . " (OVERDUE)";
+                $messageparts[] = '  - ' . get_string('email_item_overdue', 'block_aigrader_dashboard', (object)$item);
             }
             $messageparts[] = '';
         }
 
         if (empty($messageparts)) {
-            mtrace('AI Grader Dashboard: No notifications to send based on settings.');
+            mtrace('AI Essay Grader dashboard: nothing to send under the current settings.');
             return;
         }
 
@@ -155,25 +154,25 @@ class send_notifications extends \core\task\scheduled_task {
         $user = new \stdClass();
         $user->id = -1;
         $user->email = $email;
-        $user->firstname = 'AI Grader';
-        $user->lastname = 'Notification';
+        $user->firstname = get_string('pluginname', 'block_aigrader_dashboard');
+        $user->lastname = '';
         $user->maildisplay = 1;
         $user->mailformat = 1;
 
         $success = email_to_user($user, $admin, $subject, $message);
 
         if ($success) {
-            mtrace("AI Grader Dashboard: Notification sent to {$email}");
+            mtrace('AI Essay Grader dashboard: notification sent.');
 
             // Send CC if configured.
             if (!empty($ccemail)) {
                 $ccuser = clone $user;
                 $ccuser->email = $ccemail;
                 email_to_user($ccuser, $admin, $subject, $message);
-                mtrace("AI Grader Dashboard: CC sent to {$ccemail}");
+                mtrace('AI Essay Grader dashboard: copy sent.');
             }
         } else {
-            mtrace("AI Grader Dashboard: Failed to send notification to {$email}");
+            mtrace('AI Essay Grader dashboard: the notification could not be sent.');
         }
     }
 

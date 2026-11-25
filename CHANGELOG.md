@@ -1,3 +1,32 @@
+## [v2.5.0] - 2026-11-25
+
+### What's new
+
+- **Moodle Design System.** The block and the All courses page are built from Moodle Design
+  System buttons, badges and alerts, with Font Awesome icons and the theme's own font. The
+  figures sit on clean cards, each quiz row shows the quiz with its course beneath, and the
+  block follows Moodle's dark mode.
+- **Accessible.** No WCAG 2.2 AA violations in light or dark mode; every Grade now button names
+  its quiz for screen readers; the table has a caption and row headers.
+- **Paused AI suggestions are shown.** When the site has paused AI suggestions in the AI Essay
+  Grader, the block says so.
+
+### Fixed
+
+- **All courses failed for teachers.** The link was shown to graders whose permission was
+  checked at site level, where a course teacher has none, so the page refused them. Anyone who
+  can grade in a course can now open it, and it lists only their courses.
+- The title appeared twice, once in the block header and once inside the block.
+- "Proctoring reports" and parts of the notification email were hard-coded in English; course
+  and quiz names in the email now show without multi-language tags; the cron log no longer
+  records email addresses.
+- The All courses page carried its own inline styles; it now uses the block's stylesheet.
+
+### Changed
+
+- Name: **AI Essay Grader dashboard**, matching the AI Essay Grader. Labels are in sentence case.
+- Supported Moodle versions are now 4.4 to 5.3, the versions tested in CI.
+
 ## [v2.4.0] - 2026-10-24
 
 ### What's new
@@ -96,7 +125,7 @@
 ### Changed
 - RELEASE RECOVERY: Republished the reviewed authoritative source under a new immutable tag because the historical tag contained a different source tree. No functional changes.
 
-# Changelog - AI Grader Dashboard Block
+# Changelog - AI Essay Grader dashboard block
 
 All notable changes to this plugin will be documented in this file.
 
